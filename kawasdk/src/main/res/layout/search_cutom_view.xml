@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@drawable/style_rounded_corner_large"
+    android:layout_height="50dp">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/placeName"
+        android:textSize="16sp"
+        android:layout_marginStart="20dp"
+        android:text="First Exam"
+        android:textColor="@color/mapboxBlack"
+        android:layout_marginEnd="20dp"
+        android:maxLines="1"
+        android:layout_marginTop="15dp"
+        android:layout_height="wrap_content"/>
+
+
+
+    <TextView
+        android:id="@+id/border2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_alignParentBottom="true"
+        android:background="#808080"/>
+
+
+</RelativeLayout>
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content">-->
+
+
+<!--<TextView-->
+<!--    android:id="@+id/placeName"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="50dp"-->
+<!--    android:layout_marginHorizontal="16dp"-->
+<!--    android:layout_marginVertical="10dp"-->
+<!--    android:background="@drawable/style_rounded_corner_large"-->
+<!--    android:drawablePadding="10dp"-->
+<!--    android:elevation="8dp"-->
+<!--    android:gravity="left"-->
+<!--    android:singleLine="true"-->
+<!--    android:maxLines="1"-->
+<!--    android:paddingHorizontal="20dp"-->
+<!--    android:paddingVertical="15dp"-->
+<!--    android:textColor="@color/mapboxBlack"-->
+<!--    android:textColorHint="#4F4F4F"-->
+<!--    app:backgroundTint="@color/mapboxWhite"-->
+<!--    android:layout_marginStart="20dp"-->
+<!--    android:layout_marginTop="15dp"-->
+<!--    android:layout_marginEnd="20dp"-->
+<!--    android:textSize="16sp" />-->
+
+
+
+
+
+<!--</RelativeLayout>-->
+

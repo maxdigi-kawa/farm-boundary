@@ -1,0 +1,3 @@
+rootProject.name = "Kawa-sdk"
+include ':app'
+include ':kawasdk'

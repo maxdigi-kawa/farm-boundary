@@ -1,0 +1,50 @@
+{
+  "farm_fields": [
+    {
+      "field_type": "text",
+      "field_placeholder": "Name",
+      "field_tag": "name",
+      "field_id": 0,
+      "is_required": true,
+      "keyboard_button": "next"
+    },
+    {
+      "field_type": "text",
+      "field_placeholder": "city Name",
+      "field_tag": "city_name",
+      "field_id": 1,
+      "is_required": false,
+      "keyboard_button": "done"
+    },
+    {
+      "field_type": "dropdown",
+      "field_placeholder": "Crop Type",
+      "field_tag": "crop",
+      "field_id": 2,
+      "options": [
+        "Rice",
+        "Wheat",
+        "Tomato",
+        "Sugarcane"
+      ],
+      "is_required": true,
+      "keyboard_button": "done"
+    },
+    {
+      "field_type": "textarea",
+      "field_placeholder": "Address",
+      "field_tag": "address",
+      "field_id": 3,
+      "is_required": false,
+      "keyboard_button": "done"
+    },
+    {
+      "field_type": "date",
+      "field_placeholder": "Sowing Date",
+      "field_tag": "sowing_date",
+      "field_id": 4,
+      "is_required": true,
+      "keyboard_button": "done"
+    }
+  ]
+}

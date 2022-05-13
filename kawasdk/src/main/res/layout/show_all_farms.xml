@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/messageBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/mapboxBlue"
+            android:padding="5dp"
+            android:text="@string/start_selecting_label"
+            android:textAlignment="center"
+            android:textColor="#FFF" />
+
+        <Button
+            android:id="@+id/startOverBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageBox"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawableStart="@drawable/ic_start_over"
+            android:drawablePadding="5dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:text="@string/start_over"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <!--        <Button-->
+        <!--            android:id="@+id/startOverBtn"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="40dp"-->
+        <!--            android:layout_below="@+id/messageBox"-->
+        <!--            android:layout_alignParentEnd="true"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:layout_marginRight="16dp"-->
+        <!--            android:drawableLeft="@drawable/ic_start_over"-->
+        <!--            android:drawablePadding="5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:paddingHorizontal="10dp"-->
+        <!--            android:text="@string/start_over"-->
+        <!--            android:visibility="visible"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxBlack" />-->
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/drawBounderyBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:drawableLeft="@drawable/ic_area_black"
+            android:drawablePadding="5dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:text="@string/draw_polygon"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/clearNExitLayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/clearBtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@color/orange"
+                android:foreground="@drawable/riipleeffectbuttons"
+                android:text="@string/clear_boundary"
+                android:textAllCaps="false"
+                android:textColor="@color/mapboxBlack"
+                android:visibility="visible"
+                app:cornerRadius="0dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/resetBtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@color/accentblue"
+                android:foreground="@drawable/riipleeffectbuttons"
+                android:text="@string/show_farms"
+                android:textAllCaps="false"
+                android:textColor="@color/mapboxBlack"
+                android:visibility="visible"
+                app:cornerRadius="0dp" />
+
+
+        </LinearLayout>
+
+        <!--        <Button-->
+        <!--            android:id="@+id/combinePlotBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-3dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/next"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="#000000"-->
+        <!--            android:visibility="visible" />-->
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/combinePlotBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveBounderyBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:text="@string/complete_marking"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <!--        <Button-->
+        <!--            android:id="@+id/saveBounderyBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_gravity="end"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:paddingHorizontal="10dp"-->
+        <!--            android:text="@string/complete_marking"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxBlack"-->
+        <!--            android:visibility="gone" />-->
+
+    </LinearLayout>
+</RelativeLayout>

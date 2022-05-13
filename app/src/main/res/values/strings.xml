@@ -1,0 +1,61 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Kawa Space SDk</string>
+    <string name="start_kawa_map">Start Kawa Map</string>
+    <string name="genrate_farm_repory">Generate Report</string>
+    <string name="submit_farms">Submit Farms</string>
+    <string name="mapbox_api_key" translatable="false">sk.eyJ1Ijoia2F3YS1hZG1pbiIsImEiOiJja3k4bnJ0eTIxZmg0Mm5veWF3cTRsdGxjIn0.5qk_juRmzDGSw1nwNohgLQ</string>
+
+    <!--    // live -->
+    <string name="kawa_api_key">kawa_RLkNIPN-z3TeWb8AWv089w</string>
+    <!--    // stagging -->
+<!--        <string name="kawa_api_key">kawa_8ES9Vu8MoBqJveOauXITlQ</string>-->
+    <string name="user_location_permission_explanation">Allow Permission to access Location</string>
+    <string name="Error_General">Something went wrong.</string>
+    <string name="search_place_toget_started">Search for a Place to Get Started</string>
+    <string name="GET_FARMSStr">Get Farm Boundaries for this Region</string>
+    <string name="searchStr">Search places and coordinates</string>
+    <string name="start_selecting_label">Start Selecting your Plots</string>
+    <string name="start_over">Start Over</string>
+    <string name="next">Next</string>
+    <string name="exitStr">Close Map</string>
+    <string name="discard_edit">Discard Edit</string>
+    <string name="back">Back</string>
+    <string name="add_more_plots">Add More Plots</string>
+    <string name="save_edit">Save Edits</string>
+    <string name="complete_marking">Complete Marking</string>
+    <string name="complete_marking_save_polygon">Click on complete marking to save the polygon</string>
+    <string name="add_details">Add Details</string>
+    <string name="save_n_gonext">Save &amp; Go Next</string>
+    <string name="mark_another">Mark Another Farm</string>
+    <string name="correct_boundery">Edit Boundary</string>
+    <string name="farm_details">Farm Details</string>
+    <string name="farm_saved_successfully">Farms saved successfully</string>
+    <string name="farm_mark_successfully">Farm marked successfully</string>
+    <string name="area">Area</string>
+    <string name="your_locality">Your locality/address</string>
+    <string name="tap_correct_boundery">Tap edit boundary to edit farms</string>
+    <string name="select_plot_toedit">Select a plot to edit</string>
+    <string name="select_point_toedit">Select a point to edit</string>
+    <string name="drag_point_joystic">Drag the point or use the joystick</string>
+    <string name="seeds_require">Seeds Required for   your farm</string>
+    <string name="farm">Farm</string>
+    <string name="selected">selected</string>
+    <string name="error_large_area">The area chosen is too large. Please zoom in a little and try again</string>
+    <string name="error_farmnot_available">Farm boundaries are not yet available for this region.</string>
+    <string name="select_farm_to_merge">Please select farms to merge</string>
+    <string name="no_farm_detected">No farms were detected for your location. Please try again.</string>
+    <string name="hectares">Hectares</string>
+    <string name="enter_details">Enter Details</string>
+    <string name="name">Name</string>
+    <string name="address">Address</string>
+    <string name="company">Company</string>
+    <string name="mapped_locations">Mapped locations</string>
+    <string name="json_file_not_found">Kawa Form Fields Json File Not Found</string>
+    <string name="draw_polygon">Draw Boundary</string>
+    <string name="clear_boundary">Clear Boundary</string>
+    <string name="touch_first_point">Touch first point to complete the polygon</string>
+    <string name="show_farms">Show Farms</string>
+    <string name="borders_cant_intersect">Borders Can\'t Intersect</string>
+    <string name="click_to_add_another_point">Click to add another point</string>
+
+</resources>

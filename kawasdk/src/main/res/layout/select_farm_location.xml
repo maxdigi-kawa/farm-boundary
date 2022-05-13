@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/messageBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/mapboxBlue"
+            android:padding="5dp"
+            android:text="@string/search_place_toget_started"
+            android:textAlignment="center"
+            android:textColor="#FFF" />
+
+        <!--            <EditText-->
+        <!--                android:id="@+id/searchTxt"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="50dp"-->
+        <!--                android:layout_gravity="center_horizontal"-->
+        <!--                android:layout_marginHorizontal="16dp"-->
+        <!--                android:layout_marginVertical="10dp"-->
+        <!--                android:layout_marginBottom="5dp"-->
+        <!--                android:background="@drawable/style_rounded_corner_large"-->
+        <!--                android:drawableLeft="@drawable/ic_search"-->
+        <!--                android:drawablePadding="10dp"-->
+        <!--                android:elevation="8dp"-->
+        <!--                android:focusable="true"-->
+        <!--                android:focusableInTouchMode="true"-->
+        <!--                android:hint="@string/searchStr"-->
+        <!--                android:imeOptions="actionDone"-->
+        <!--                android:inputType="text"-->
+        <!--                android:maxLines="1"-->
+        <!--                android:paddingHorizontal="20dp"-->
+        <!--                android:paddingVertical="15dp"-->
+        <!--                android:singleLine="true"-->
+        <!--                android:textColor="@color/mapboxBlack"-->
+        <!--                android:textColorHint="#4F4F4F" />-->
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <EditText
+                android:id="@+id/searchTxt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="10dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/style_rounded_corner_large"
+                android:drawableLeft="@drawable/ic_search"
+                android:drawablePadding="10dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="@string/searchStr"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingVertical="15dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="40dp"
+                android:singleLine="true"
+                android:textColor="@color/mapboxBlack"
+                android:textColorHint="@color/mapboxGrayLight" />
+
+            <ImageView
+                android:id="@+id/button_search_clear"
+                android:layout_width="35dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/close_icon"
+                android:padding="30dp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/dropdownBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="16dp"
+            android:backgroundTint="@color/mapboxWhite"
+            android:drawableLeft="@drawable/ic_location"
+            android:drawableRight="@drawable/ic_drop_down_arrow"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:drawablePadding="5dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/mapped_locations"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/place_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/style_recyclerview"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/powerdByIV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/style_powerby"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:src="@drawable/powered_by_google_on_white" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/locationlist_recyclerView"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/style_rounded_corner_large"
+            android:maxHeight="300dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutProgressbar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="@color/mapboxWhite"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minHeight="50dp"
+            android:layout_gravity="center"
+            android:minWidth="50dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/zoomInBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/style_rounded_corner_top"
+            android:src="@drawable/ic_add" />
+
+        <ImageButton
+            android:id="@+id/zoomOutBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/style_rounded_corner_bottom"
+            android:src="@drawable/ic_minus"
+            android:textColor="@color/mapboxWhite"
+            app:backgroundTint="@color/mapboxBlack" />
+
+        <ImageButton
+            android:id="@+id/goCurrentLocBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_above="@+id/GET_FARMSBtn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/style_circle"
+            android:src="@drawable/ic_mylocation"
+            app:backgroundTint="@color/mapboxPink"
+            app:tint="@android:color/white" />
+
+<!--        <Button-->
+<!--            android:id="@+id/GET_FARMSBtn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_marginTop="-5dp"-->
+<!--            android:layout_marginBottom="-7dp"-->
+<!--            android:foreground="@drawable/riipleeffectbuttons"-->
+<!--            android:text="@string/GET_FARMSStr"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/whitePressed" />-->
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/GET_FARMSBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/GET_FARMSStr"
+            android:textAllCaps="false"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/whitePressed"/>
+    </LinearLayout>
+</RelativeLayout>

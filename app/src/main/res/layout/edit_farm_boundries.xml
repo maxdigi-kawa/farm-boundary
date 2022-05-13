@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:gravity="top">
+
+        <TextView
+            android:id="@+id/messageBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/mapboxBlue"
+            android:padding="5dp"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="#FFF" />
+
+        <LinearLayout
+            android:id="@+id/farm_mark_messagebox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@color/accentcyan"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:drawableStart="@drawable/ic_check_small"
+                android:drawablePadding="10dp"
+                android:padding="10dp"
+                android:text="@string/farm_mark_successfully"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/discardEditBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageBox"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:drawableStart="@drawable/ic_discard"
+            android:drawablePadding="5dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:text="@string/discard_edit"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageBox"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@+id/discardEditBtn"
+            android:drawableStart="@drawable/ic_back"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:text="@string/back"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/startOverBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageBox"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawableStart="@drawable/ic_start_over"
+            android:drawablePadding="5dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:text="@string/start_over"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/footerLeftLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|left"
+        android:gravity="bottom|left"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/zoomInBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/style_rounded_corner_top"
+            android:src="@drawable/ic_add"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/zoomOutBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/style_rounded_corner_bottom"
+
+            android:src="@drawable/ic_minus"
+            android:textColor="@color/mapboxWhite"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxBlack" />
+
+
+        <Button
+            android:id="@+id/addMoreBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:drawablePadding="5dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:text="@string/add_more_plots"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveEditBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/save_edit"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/whitePressed"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/completeMarkingBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/complete_marking"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/mapboxWhite"/>
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveDetailBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/submit_farms"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/mapboxWhite"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/addDetailBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/add_details"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/mapboxWhite"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveDetailnNextBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/save_n_gonext"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:background="@color/mapboxBlue"
+            app:layout_constraintBottom_toBottomOf="@id/mapView"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/mapboxWhite"/>
+
+
+
+        <!--        <Button-->
+        <!--            android:id="@+id/saveDetailnNextBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/save_n_gonext"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxWhite"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/genrateReportBtn"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/genrate_farm_repory"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:background="@color/mapboxBlue"
+            app:layout_constraintBottom_toBottomOf="@id/mapView"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:textColor="@color/mapboxWhite"/>
+
+
+        <!--        <Button-->
+        <!--            android:id="@+id/genrateReportBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/genrate_farm_repory"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxWhite"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:cornerRadius="0dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+
+        <LinearLayout
+            android:id="@+id/anotherndExitLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/markAnotherBtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                app:cornerRadius="0dp"
+                android:text="@string/mark_another"
+                android:textAllCaps="false"
+                android:visibility="visible"
+                android:background="@color/mapboxBlue"
+                app:layout_constraintBottom_toBottomOf="@id/mapView"
+                android:foreground="@drawable/riipleeffectbuttons"
+                android:textColor="@color/mapboxWhite"/>
+
+            <!--            <Button-->
+            <!--                android:id="@+id/markAnotherBtn"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="60dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:foreground="@drawable/riipleeffectbuttons"-->
+            <!--                android:text="@string/mark_another"-->
+            <!--                android:textAlignment="center"-->
+            <!--                android:textAllCaps="false"-->
+            <!--                android:textColor="@color/mapboxWhite"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:cornerRadius="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/exitBtn"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                app:cornerRadius="0dp"
+
+                android:text="@string/exitStr"
+                android:textAllCaps="false"
+                android:visibility="visible"
+                android:background="@color/orange"
+                app:layout_constraintBottom_toBottomOf="@id/mapView"
+                android:foreground="@drawable/riipleeffectbuttons"
+                android:textColor="@color/mapboxWhite"/>
+
+            <!--            <Button-->
+            <!--                android:id="@+id/exitBtn"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="60dp"-->
+            <!--                android:layout_marginLeft="-5dp"-->
+            <!--                android:layout_marginTop="-5dp"-->
+            <!--                android:layout_marginRight="-5dp"-->
+            <!--                android:layout_marginBottom="-5dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:backgroundTint="@color/orange"-->
+            <!--                android:foreground="@drawable/riipleeffectbuttons"-->
+            <!--                android:text="@string/exitStr"-->
+            <!--                android:textAlignment="center"-->
+            <!--                android:textAllCaps="false"-->
+            <!--                android:textColor="@color/mapboxWhite"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:cornerRadius="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="60dp"
+        android:gravity="bottom|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/upBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/downBtn"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toLeftOf="@+id/rightBtn"
+            android:background="@drawable/rippleeffectjoysticbtn"
+            android:src="@drawable/ic_arrow_up"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxWhite" />
+
+        <ImageButton
+            android:id="@+id/leftBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toLeftOf="@+id/downBtn"
+            android:background="@drawable/rippleeffectjoysticbtn"
+            android:src="@drawable/ic_arrow_left"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxWhite" />
+
+        <ImageButton
+            android:id="@+id/downBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/rightBtn"
+            android:background="@drawable/rippleeffectjoysticbtn"
+            android:src="@drawable/ic_arrow_down"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxWhite" />
+
+        <ImageButton
+            android:id="@+id/rightBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rippleeffectjoysticbtn"
+            android:src="@drawable/ic_arrow_right"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxWhite" />
+
+
+        <Button
+            android:id="@+id/correctBoundryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:foreground="@drawable/riipleeffectbuttons"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="0dp"
+            android:drawablePadding="5dp"
+            android:text="@string/correct_boundery"
+            android:textAllCaps="false"
+            android:textColor="@color/mapboxBlack"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/detailsForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/footerLeftLinearLayout"
+        android:background="@color/mapboxBlack"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="@string/farm_details"
+            android:textAlignment="center"
+            android:textColor="@color/mapboxWhite"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/thankyouLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/footerLeftLinearLayout"
+        android:background="#02C9A6"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:padding="25dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:src="@drawable/ic_check" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="@string/farm_saved_successfully"
+            android:textAlignment="center"
+            android:textColor="@color/mapboxWhite"
+            android:textSize="20sp" />
+
+        <!--        <Button-->
+        <!--            android:id="@+id/markAnotherBtn"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="45dp"-->
+        <!--            android:layout_gravity="center_horizontal"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:drawableLeft="@drawable/ic_start_over"-->
+        <!--            android:paddingHorizontal="10dp"-->
+        <!--            android:paddingTop="0dp"-->
+        <!--            android:paddingBottom="0dp"-->
+        <!--            android:text="Mark Another"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxBlack" />-->
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/footerLeftLinearLayout"
+        android:gravity="bottom">
+
+        <LinearLayout
+            android:id="@+id/farmDetailsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/footerLeftLinearLayout"
+            android:background="#90000000"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="30dp"
+            android:visibility="gone">
+
+
+            <TextView
+                android:id="@+id/farmDetailsTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="20dp"
+                android:text="@string/farm_details"
+                android:textAlignment="center"
+                android:textColor="@color/mapboxWhite"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/areaLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/areaiconIv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_area" />
+
+                <TextView
+                    android:id="@+id/areaTv"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/area"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp" />
+
+
+                <TextView
+                    android:id="@+id/totalAreaTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/dootedLineFirst"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:src="@drawable/dottedline" />
+
+            <LinearLayout
+                android:id="@+id/seedsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+
+                <ImageView
+                    android:id="@+id/seediconIv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_seeds" />
+
+                <TextView
+                    android:id="@+id/seedsTv"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/seeds_require"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp" />
+
+
+                <TextView
+                    android:id="@+id/totalseedsTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="17 KG"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/dootedLineSecond"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:src="@drawable/dottedline" />
+
+
+            <LinearLayout
+                android:id="@+id/locationLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/locationiconIv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_farm_address" />
+
+                <TextView
+                    android:id="@+id/locationTv"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/your_locality"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp" />
+
+
+                <TextView
+                    android:id="@+id/addressTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="end"
+                    android:text="India"
+                    android:textColor="@color/mapboxWhite"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
