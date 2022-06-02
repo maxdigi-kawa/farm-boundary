@@ -1,5 +1,7 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -80,11 +82,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
-
 public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
     private Common COMACT;
-
+    private int PIDX = 0;
+    private int ISINTERSECT = 0;
     private View VIEW;
     private MapView MAPVIEW;
     private MapboxMap MAPBOXMAP;
@@ -190,6 +191,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
             COMACT.lockZoom(MAPBOXMAP);//----------
             MAPBOXMAP.addOnMapClickListener(this);
             LNGLAT = new ArrayList<>();
+            PIDX = 0;
             if (LNGLATEDIT.size() > 0) {
                 for (int i = 0; i < LNGLATEDIT.size(); i++) {
                     List<LatLng> ll = new ArrayList<>();
@@ -202,6 +204,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                     }
                     LNGLAT.add(ll);
                     LATLNGARR.add(llPts);
+                    PIDX += 1;
                     COMACT.drawMapLayers(style, llPts, String.valueOf(i), "edit");
                     int middlepolyposition = LNGLAT.get(i).size() / 2;
                     if (KawaMap.isFormEnable)
@@ -292,14 +295,14 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                         .withLatLng(new LatLng(LNGLATEDIT.get(idx).get(j).getLatitude(), LNGLATEDIT.get(idx).get(j).getLongitude()))
                         .withIconImage("symbol_blue")
                         .withIconSize(0.5f)
-                        .withDraggable(false)
+                        .withDraggable(true)
                         .withIconOpacity(0.0f)
                         .withData(objD)
                 );
             }
         }
 
-        symbolManager.addClickListener(symbol -> {
+        /*symbolManager.addClickListener(symbol -> {
             // Log.e("EDITON - LAYERINDEX", String.valueOf(EDITON) + " - " + LAYERINDEX);
             if (EDITON && LAYERINDEX >= 0) {
                 // Log.e("getIconOpacity SYMBOL", String.valueOf(symbol.getIconOpacity()));
@@ -336,7 +339,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
             }
             return true;
         });
-
+*/
         symbolManager.addDragListener(new OnSymbolDragListener() {
             LatLng previouscoord;
             String strsubmit;
@@ -344,6 +347,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
             @Override
             public void onAnnotationDragStarted(Symbol symbol) {
                 previouscoord = symbol.getLatLng();
+                onSymbolSelected();
             }
 
             @Override
@@ -363,6 +367,15 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                 strsubmit = "{\"lat\":" + "\"" + previouscoord.getLatitude() + "\"" + ",\"long\":" + "\"" + previouscoord.getLongitude() + "\"" + "},\"currentCoordinates\":{\"lat\":" + "\"" + symbol.getLatLng().getLatitude() + "\"" + ",\"long\":" + "\"" + symbol.getLatLng().getLongitude() + "\"" + "}";
                 COMACT.segmentEvents(getActivity(), "Point edit",
                         "User moved a point by dragging it", MAPBOXMAP, strsubmit, "DRAG_APOINT_TOEDIT");
+                Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.borders_cant_intersect), Toast.LENGTH_SHORT);
+                if (ISINTERSECT == 1) {
+                    toast.show();
+//                    saveBounderyBtn.setVisibility(View.GONE);
+                }
+//                else if (DRAWENABLE == 4) {
+//                    messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
+////                    saveBounderyBtn.setVisibility(View.VISIBLE);
+//                }
             }
         });
     }
@@ -408,9 +421,9 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
 
                                 if (opacity > 0 && symbol.getIconOpacity() <= 0 || opacity <= 0 && symbol.getIconOpacity() > 0) {
                                     symbol.setIconOpacity(opacity);
-                                    symbol.setDraggable(false);
+                                    symbol.setDraggable(true);
                                     symbol.setIconImage("symbol_blue");
-                                    symbol.setIconSize(0.3f);
+                                    symbol.setIconSize(0.5f);
                                     SYMBOLSET.get(i).update(symbol);
                                 }
                             }
@@ -483,11 +496,9 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
 //                          polyLayer.setProperties(PropertyFactory.fillOpacity(0.6f));
 //                    }
                 }
-
                 llPtsA.add(llPts);
                 GeoJsonSource lineSourceID = style.getSourceAs("lineSourceID" + LAYERINDEX);
                 GeoJsonSource polySourceID = style.getSourceAs("polySourceID" + LAYERINDEX);
-
                 if (lineSourceID != null) {
                     lineSourceID.setGeoJson(FeatureCollection.fromJson(""));
                     polySourceID.setGeoJson(FeatureCollection.fromJson(""));
@@ -495,6 +506,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                     polySourceID.setGeoJson(Feature.fromGeometry(Polygon.fromLngLats(llPtsA)));
                 }
             });
+            checkForIntersections();
         }
     }
 
@@ -1310,6 +1322,80 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                 });
 
 
+    }
+
+    private void checkForIntersections() {
+        Point lnPoint1, lnPoint2, lnPoint3, lnPoint4;
+        int intersectionCheckLimit = LNGLATEDIT.get(0).size() - 2;
+        ISINTERSECT = 0;
+        changeBorderColor("#000000");
+        //messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
+        messageBox.setBackgroundColor(KawaMap.headerBgColor);
+        if (LNGLATEDIT.get(0).size() > 2) {
+            for (int j = 0; j < intersectionCheckLimit; j++) {
+                lnPoint1 = Point.fromLngLat(LNGLATEDIT.get(0).get(j).getLongitude(), LNGLATEDIT.get(0).get(j).getLatitude());
+                lnPoint2 = Point.fromLngLat(LNGLATEDIT.get(0).get(j + 1).getLongitude(), LNGLATEDIT.get(0).get(j + 1).getLatitude());
+                for (int k = 0; k <= intersectionCheckLimit; k++) {
+                    if (k != j && k != (j + 1) && (k + 1) != j && (k + 1) != (j + 1)) {
+                        lnPoint3 = Point.fromLngLat(LNGLATEDIT.get(0).get(k).getLongitude(), LNGLATEDIT.get(0).get(k).getLatitude());
+                        lnPoint4 = Point.fromLngLat(LNGLATEDIT.get(0).get(k + 1).getLongitude(), LNGLATEDIT.get(0).get(k + 1).getLatitude());
+                        if (lineIntersect(lnPoint1, lnPoint2, lnPoint3, lnPoint4)) {
+                            changeBorderColor("#ff0000");
+                            messageBox.setText(getResources().getString(R.string.borders_cant_intersect));
+                            messageBox.setBackgroundColor(getResources().getColor(R.color.mapboxRed));
+                            ISINTERSECT = 1;
+                            break;
+                        }
+//                        else {
+////                            changeBorderColor("#F7F14A");
+//                           //  messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
+//                        }
+                    }
+                }
+                if (ISINTERSECT == 1) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean lineIntersect(Point lnPoint1, Point lnPoint2, Point lnPoint3, Point lnPoint4) {
+        double x1 = lnPoint1.latitude();
+        double y1 = lnPoint1.longitude();
+        double x2 = lnPoint2.latitude();
+        double y2 = lnPoint2.longitude();
+        double x3 = lnPoint3.latitude();
+        double y3 = lnPoint3.longitude();
+        double x4 = lnPoint4.latitude();
+        double y4 = lnPoint4.longitude();
+        ///below if is to ignore if line 1 endpoint and line 2 start point is same
+        if (x1 != x4 && y1 != y4) {
+            double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+            if (denom == 0.0) { // Lines are parallel.
+                //retrn null;
+            }
+            double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+            double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+            if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f)
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
+
+
+    private void changeBorderColor(String borderColorCode) {
+        Style style = MAPBOXMAP.getStyle();
+        Log.e(TAG, "changeBorderColor: "+borderColorCode );
+        for (int k = 0; k < PIDX; k++) {
+            Layer lineLayer = style.getLayer("lineLayerID" + k);
+           // Layer polyLayer = style.getLayer("polyLayerIDDP" + k);
+            Integer borderColor = Color.parseColor(borderColorCode);
+            lineLayer.setProperties(PropertyFactory.lineColor(borderColor));
+//            polyLayer.setProperties(PropertyFactory.fillOpacity(0f));
+
+        }
     }
 
     @Override

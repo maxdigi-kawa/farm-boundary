@@ -311,7 +311,7 @@ public class Common extends AppCompatActivity {
                 centerPointobject.put("zoomLeval", MAPZOOM);
                 jsonObject.put("center_position", centerPointobject);
                 jsonObject.put("four_corners", vRegion);
-                interfaceKawaEvents.onkawaUpdate(jsonObject.toString());
+                interfaceKawaEvents.onkawaUpdate(jsonObject);
             }
         } catch (Exception e) {
 

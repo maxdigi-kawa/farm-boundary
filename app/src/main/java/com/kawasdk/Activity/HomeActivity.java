@@ -45,19 +45,19 @@ public class HomeActivity extends AppCompatActivity {
         String nameStr = nameTxt.getText().toString().trim();
         String addressStr = addressTxt.getText().toString().trim();
         String companyStr = companyTxt.getText().toString().trim();
-        if (nameStr.isEmpty()) {
-            Toast.makeText(HomeActivity.this, "Please enter name", Toast.LENGTH_LONG).show();
-            return;
-        } else if (addressStr.isEmpty()) {
-            Toast.makeText(HomeActivity.this, "Please enter address", Toast.LENGTH_LONG).show();
-            return;
-        } else {
+//        if (nameStr.isEmpty()) {
+//            Toast.makeText(HomeActivity.this, "Please enter name", Toast.LENGTH_LONG).show();
+//            return;
+//        } else if (addressStr.isEmpty()) {
+//            Toast.makeText(HomeActivity.this, "Please enter address", Toast.LENGTH_LONG).show();
+//            return;
+//        } else {
             Common.USER_NAME = nameTxt.getText().toString();
             Common.USER_ADDRESS = addressTxt.getText().toString();
             Common.USER_COMPANY = companyTxt.getText().toString();
             Intent intent = new Intent(HomeActivity.this, kawaHomeActivity.class);
             startActivity(intent);
-        }
+       // }
 
 
     }

@@ -1,5 +1,7 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,8 +70,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
     private Common COMACT;
@@ -437,7 +437,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
         String strMerge = "{\"farms_fetched_at\":" + "\"" + COMACT.FARMS_FETCHED_AT + "\"" + ",\"recipe_id\":\"farm_boundaries\",\"aois\":" + String.valueOf(listFeatures) + "}";
         JsonObject selectedFarms = JsonParser.parseString(strMerge).getAsJsonObject();
-        interfaceKawaEvents.onkawaSelect(selectedFarms.toString());
+        interfaceKawaEvents.onkawaSelect(selectedFarms);
         //Phase second
         COMACT.showLoader(getActivity(),"isCircle");
         ServiceManager.getInstance().getKawaService().getMergedPoints(KawaMap.KAWA_API_KEY, COMACT.SDK_VERSION, selectedFarms).enqueue(new Callback<MergeModel>() {

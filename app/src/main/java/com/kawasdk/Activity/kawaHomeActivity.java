@@ -31,14 +31,14 @@ public class kawaHomeActivity extends AppCompatActivity implements InterfaceKawa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kawa_home);
-        KawaMap kawaMap = new KawaMap();
+        KawaMap kawaMap = new KawaMap(this);
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.kawaMapView, fragmentFarmLocation.class,null).commit();
         kawaMap.startKawaSDK(kawaHomeActivity.this, getResources().getString(R.string.kawa_api_key));
         kawaMap.isMergeEnable = true;
-        kawaMap.isEditEnable = false;
+        kawaMap.isEditEnable = true;
 //        kawaMap.isFarmDetailsEnable = true;
 //        // KawaMap.isOtherFarmDetailsEnable = false;
         kawaMap.isFormEnable = false;

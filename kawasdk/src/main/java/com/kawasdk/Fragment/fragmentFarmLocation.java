@@ -1,5 +1,7 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -92,8 +94,6 @@ import java.util.regex.Pattern;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class fragmentFarmLocation extends Fragment implements OnMapReadyCallback, PlaceSearchAdapter.PlaceSearchItemClickListener, LocationAdapter.LocationItemClickListener, MapboxMap.OnMapClickListener {
 
