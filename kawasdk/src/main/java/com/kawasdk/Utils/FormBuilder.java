@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class FormBuilder  {
+public class FormBuilder extends AppCompatActivity {
 
     public static EditText editFiled(Context context, JSONObject jsonObject, LinearLayout.LayoutParams editTextLayoutParams) {
         EditText rowEditView = new EditText(context);

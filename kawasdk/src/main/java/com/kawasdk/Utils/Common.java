@@ -1,5 +1,8 @@
 package com.kawasdk.Utils;
 
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -58,14 +61,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
-
 public class Common extends AppCompatActivity {
 
+    private static final String TAG = "Common";
     private static Animation animVerticala;
     public static ProgressDialog proDialog;
-//    public static Context context;
+    //    public static Context context;
     public ImageView imageline;
     public static double MXCAMERALAT;
     public static double MXCAMERALNG;
@@ -79,7 +80,7 @@ public class Common extends AppCompatActivity {
     //public static final String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoicnVwZXNoamFpbiIsImEiOiJja3JwdmdneGU1NHlxMnpwODN6bzFpbnkwIn0.UgSIBr9ChJFyrAKxtdNf9w"; // OLd MAPBOX TOKEN
     public static final String BASE_URL = "https://data.kawa.space/"; // live url
     public static final String ADRESS_URL = "https://nominatim.openstreetmap.org/"; // live url
-//    public static final String BASE_URL = "https://data-staging.kawa.space/"; // test url
+    //    public static final String BASE_URL = "https://data-staging.kawa.space/"; // test url
     public static final String SDK_VERSION = android.os.Build.VERSION.SDK;
     private static final int PERMISSION_REQUEST_CODE = 100;
     public static String FARMS_FETCHED_AT = "";
@@ -99,7 +100,7 @@ public class Common extends AppCompatActivity {
     public static String LANGUAGE = "en";
 
     public Common(Context context) {
-       // this.context = context;
+        // this.context = context;
         MAPBOX_ACCESS_TOKEN = context.getResources().getString(R.string.mapbox_api_key); // MAPBOX TOKEN
     }
 
@@ -113,15 +114,26 @@ public class Common extends AppCompatActivity {
         Integer borderColor = Color.parseColor("#000000");
 
         if(type.equals("TranStyle")) {
-            borderColor = Color.parseColor("#F7F14A");
+            borderColor  =Color.parseColor("#F7F14A");
             borderL = 2f;
             opacityP = 0.0f;
         }
 
+        if(type.equals("update")){
+            opacityL = 1.0f;
+            borderL = 2f;
+            Log.e(TAG, "drawMapLayers: I am here" );
+            color = Color.parseColor("#c9577e");
+            opacityP = 0.0f;
+            borderColor  =Color.parseColor("#F7F14A");
+//            Toast.makeText(this, "I am here", Toast.LENGTH_SHORT).show();
+        }
+
         if (type.equals("edit")) {
             opacityL = 1.0f;
+            borderL = 0.6f;
             color = Color.parseColor("#c9577e");
-        } else {
+        } else if(!type.equals("update") && !type.equals("edit")){
             Random random = new Random();
             int colorR = Color.rgb(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             color = Integer.parseInt(String.valueOf(colorR));
@@ -137,6 +149,12 @@ public class Common extends AppCompatActivity {
                 PropertyFactory.lineColor(borderColor),
                 PropertyFactory.lineOpacity(opacityL)
         ));
+
+//        for (Layer layer :
+//             style.getLayers()) {
+//            Log.e(TAG, "drawMapLayers: layer ID : " + layer.getId() );
+//        }
+
     }
 
     public void initMarker(Context context,Style style, MapboxMap MAPBOXMAP, MapView MAPVIEW) {
@@ -342,7 +360,7 @@ public class Common extends AppCompatActivity {
                     // Log.e("value", "Permission Granted, Now you can use local drive .");
                 } else {
                     // Log.e("value", "Permission Denied, You cannot use local drive .");
-                  //  Toast.makeText(context, "Cannot save farms.", Toast.LENGTH_LONG).show();
+                    //  Toast.makeText(context, "Cannot save farms.", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -481,4 +499,3 @@ public class Common extends AppCompatActivity {
     }
 
 }
-

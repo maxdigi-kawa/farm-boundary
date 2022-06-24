@@ -39,10 +39,11 @@ public class kawaHomeActivity extends AppCompatActivity implements InterfaceKawa
         kawaMap.startKawaSDK(kawaHomeActivity.this, getResources().getString(R.string.kawa_api_key));
         kawaMap.isMergeEnable = true;
         kawaMap.isEditEnable = true;
-//        kawaMap.isFarmDetailsEnable = true;
-//        // KawaMap.isOtherFarmDetailsEnable = false;
-        kawaMap.isFormEnable = false;
+        kawaMap.isFarmDetailsEnable = true;
+        // KawaMap.isOtherFarmDetailsEnable = false;
+        kawaMap.isFormEnable = true;
         kawaMap.isFlyToLocationEnable = true;
+        kawaMap.isDevelop = true;
     }
 
 

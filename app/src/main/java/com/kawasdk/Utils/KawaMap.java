@@ -50,6 +50,7 @@ public class KawaMap extends AppCompatActivity {
     public static boolean isOtherFarmDetailsEnable = false;
     public static boolean isSaveResultEnable = false;
     public static boolean isBahasaEnable = false;
+    public static boolean isDevelop = false;
     public static boolean isFlyToLocationEnable = false;
 
     public KawaMap(Context context) {

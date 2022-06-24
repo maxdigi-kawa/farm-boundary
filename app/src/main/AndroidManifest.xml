@@ -23,15 +23,21 @@
             android:name=".Activity.HomeActivity"
             android:exported="true"
             android:windowSoftInputMode="">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".Activity.kawaHomeActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activity.kawaHomeActivity"
-            android:windowSoftInputMode="adjustPan"/>
 
     </application>
 

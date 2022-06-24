@@ -3,13 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.2128623188405797" />
-        <entry key="app/src/main/res/layout/activity_kawa_home.xml" value="0.28229166666666666" />
-        <entry key="app/src/main/res/layout/show_all_farms.xml" value="0.13728470111448834" />
+        <entry key="app/src/main/res/layout/edit_farm_boundries.xml" value="0.14791666666666667" />
+        <entry key="app/src/main/res/layout/select_farm_location.xml" value="0.25" />
+        <entry key="kawasdk/src/main/res/drawable/ic_delete.xml" value="0.1" />
+        <entry key="kawasdk/src/main/res/layout/edit_farm_boundries.xml" value="0.3365036231884058" />
+        <entry key="kawasdk/src/main/res/layout/loader.xml" value="0.3365036231884058" />
+        <entry key="kawasdk/src/main/res/layout/select_farm_location.xml" value="0.3365036231884058" />
       </map>
     </option>
   </component>
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -84,7 +85,7 @@ import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
     private Common COMACT;
-    private int PIDX = 0;
+    //    private int PIDX = 0;
     private int ISINTERSECT = 0;
     private View VIEW;
     private MapView MAPVIEW;
@@ -99,8 +100,8 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
     List<List<Point>> LATLNGARR = new ArrayList<>();
     ArrayList POLYGONAREA = new ArrayList<>();
 
-    private static Integer LAYERINDEX;
-    private static List<SymbolManager> SYMBOLSET = new ArrayList<>();
+    private static Integer LAYERINDEX = -1;
+    private static List<List<SymbolManager>> SYMBOLSET = new ArrayList<>();
     private static List<SymbolManager> NOSYMBOLSET = new ArrayList<>();
     List<String> BEFOREEDITLISTFEATURE = new ArrayList<>();
     private static Symbol SYMBOLACTIVE;
@@ -108,7 +109,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
     InterfaceKawaEvents interfaceKawaEvents;
     Integer FINALFOUNDIDX;
     Button correctBoundryBtn, saveEditBtn, completeMarkingBtn, saveDetailBtn, addDetailBtn, saveDetailnNextBtn, startOverBtn, addMoreBtn, discardEditBtn, backBtn, markAnotherBtn, exitBtn;
-    ImageButton downBtn, upBtn, leftBtn, zoomOutBtn, zoomInBtn, rightBtn;
+    ImageButton downBtn, upBtn, leftBtn, zoomOutBtn, zoomInBtn, trashBtn, rightBtn;
     LinearLayout detailsForm, thankyouLinearLayout, farmDetailsLayout, anotherndExitLayout;
     TextView totalAreaTv, totalseedsTv, addressTv;
     ImageView dootedLineFirst, dootedLineSecond;
@@ -128,6 +129,8 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
     Integer LASTINDEXOFSELECTEDPOLYGON;
     String SETERRORMSG = "";
     boolean FORMVALIDATE = false;
+    int activeSymbolIndex = -1;
+//    int SELECTEDPOLYGON = 0;
 
     @Override
     public void onAttach(@NonNull @NotNull Context context) {
@@ -185,13 +188,13 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         //  MAPBOXMAP.getUiSettings().setScrollGesturesEnabled(false); // Disable Scroll
         MAPBOXMAP.getUiSettings().setDoubleTapGesturesEnabled(false);
         MAPBOXMAP.setStyle(Style.SATELLITE_STREETS, style -> {
-
+            // Log.e(TAG, "onMapReady: "+PIDX );
             LatLng latLng = new LatLng(COMACT.CAMERALAT, COMACT.CAMERALNG);
             MAPBOXMAP.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(latLng).zoom(COMACT.MAPZOOM).build()), 1000);
             COMACT.lockZoom(MAPBOXMAP);//----------
             MAPBOXMAP.addOnMapClickListener(this);
             LNGLAT = new ArrayList<>();
-            PIDX = 0;
+            //  PIDX = 0;
             if (LNGLATEDIT.size() > 0) {
                 for (int i = 0; i < LNGLATEDIT.size(); i++) {
                     List<LatLng> ll = new ArrayList<>();
@@ -204,26 +207,28 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                     }
                     LNGLAT.add(ll);
                     LATLNGARR.add(llPts);
-                    PIDX += 1;
+                    //   PIDX += 1;
                     COMACT.drawMapLayers(style, llPts, String.valueOf(i), "edit");
+                    Log.e(TAG, "onMapReady: layer id : " + style.getLayer("polyLayerID" + i).toString());
                     int middlepolyposition = LNGLAT.get(i).size() / 2;
                     if (KawaMap.isFormEnable)
                         drawSymbolsforPolygon(middlepolyposition, i);
-                    drawSymbol(style, i);
+                    drawSymbol(style, i, 0.0f);
                     Feature multiPointFeature = Feature.fromGeometry(Polygon.fromLngLats(LATLNGARR));
                     multiPointFeature.addStringProperty("area", String.valueOf(POLYGONAREA.get(i)));
                     BEFOREEDITLISTFEATURE.add(multiPointFeature.toJson());
                 }
             }
-            COMACT.initMarker(getActivity(),style, MAPBOXMAP, MAPVIEW);
+            COMACT.initMarker(getActivity(), style, MAPBOXMAP, MAPVIEW);
         });
     }
 
     @Override
     public boolean onMapClick(@NonNull LatLng coordsOfPoint) {
-
+        Log.e(TAG, "onMapClick: total polyon 1: " + LNGLATEDIT.size());
         if (EDITON && SYMBOLACTIVE == null) {
             if (LNGLATEDIT.size() > 0) {
+                Log.e(TAG, "onMapClick: total polyon 2: " + LNGLATEDIT.size());
                 onMaboxMapClick(coordsOfPoint);
             }
         }
@@ -244,140 +249,168 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                     }
                 }
             }
+            Log.e(TAG, "foundIdx: " +foundIdx+"LAYERINDEX: " +LAYERINDEX);
             if (foundIdx >= 0 && LAYERINDEX != foundIdx) {
                 for (int i = 0; i < LNGLATEDIT.size(); i++) {
                     float opacityL = 0.3f;
                     float opacityP = 0.3f;
+                    float borderL = 0.3f;
                     if (foundIdx == i) {
 
                         opacityL = 1.0f;
                         opacityP = 0.6f;
+                        borderL = 2f;
                     }
                     Layer lineLayer = style.getLayer("lineLayerID" + i);
                     Layer polyLayer = style.getLayer("polyLayerID" + i);
                     if (lineLayer != null && polyLayer != null) {
                         lineLayer.setProperties(PropertyFactory.lineOpacity(opacityL));
+                        lineLayer.setProperties(PropertyFactory.lineWidth(borderL));
                         polyLayer.setProperties(PropertyFactory.fillOpacity(opacityP));
                     }
                 }
                 FINALFOUNDIDX = foundIdx;
-
                 new Handler(Looper.getMainLooper()).postDelayed(
                         new Runnable() {
                             public void run() {
-                                LAYERINDEX = FINALFOUNDIDX;
-                                onFarmSelected(LAYERINDEX);
-                                showHideSymbol("show", false);
-                                //Log.e("onMapClick AFTER", String.valueOf(EDITON) + " : " + String.valueOf(LAYERINDEX));
+                                if (FINALFOUNDIDX != -1) {
+                                    Log.e(TAG, "run: polygonIndex : " + FINALFOUNDIDX );
+                                    LAYERINDEX = FINALFOUNDIDX;
+                                    onFarmSelected(LAYERINDEX);
+                                    trashBtn.setVisibility(View.GONE);
+                                    showHideSymbol("show", false);
+//                                SELECTEDPOLYGON = FINALFOUNDIDX;
+                                    //Log.e("onMapClick AFTER", String.valueOf(EDITON) + " : " + String.valueOf(LAYERINDEX));
+                                }
+
                             }
                         },
                         300);
+
+
             }
         });
     }
 
-    private void drawSymbol(Style style, int idx) {
-        SymbolManager symbolManager = new SymbolManager(MAPVIEW, MAPBOXMAP, style);
-        symbolManager.setIconAllowOverlap(true);
-        symbolManager.setTextAllowOverlap(true);
-        SYMBOLSET.add(symbolManager);
+    private void drawSymbol(Style style, int idx, float opacity) {
+        List<SymbolManager> symbolManagers = new ArrayList<>();
+        for (int j = 0; j < LNGLATEDIT.get(idx).size() - 1; j++) {
+            SymbolManager symbolManager = new SymbolManager(MAPVIEW, MAPBOXMAP, style);
+            symbolManager.setIconAllowOverlap(true);
+            symbolManager.setTextAllowOverlap(true);
+            symbolManagers.add(symbolManager);
+            style.addImage("symbol_blue", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_blue));
+            style.addImage("symbol_yellow", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_yellow));
+            style.addImage("symbol_active", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_activeb));
 
-        style.addImage("symbol_blue", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_blue));
-        style.addImage("symbol_yellow", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_yellow));
-        if (LNGLATEDIT.get(idx).size() > 0) {
-            LASTINDEXOFSELECTEDPOLYGON = LNGLATEDIT.get(idx).size() - 1;
+            JsonObject objD = new JsonObject();
+            objD.addProperty("sIndex", j);
+            symbolManager.create(new SymbolOptions()
+                    .withLatLng(new LatLng(LNGLATEDIT.get(idx).get(j).getLatitude(), LNGLATEDIT.get(idx).get(j).getLongitude()))
+                    .withIconImage( j == 0 ? "symbol_active" : "symbol_blue")
+                    .withIconSize(0.5f)
+                    .withDraggable(true)
+                    .withIconOpacity(opacity)
+                    .withData(objD));
 
-            for (int j = 0; j < LNGLATEDIT.get(idx).size() - 1; j++) {
-                JsonObject objD = new JsonObject();
-                //objD.addProperty("lIndex", idx);
-                objD.addProperty("sIndex", j);
-                symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(LNGLATEDIT.get(idx).get(j).getLatitude(), LNGLATEDIT.get(idx).get(j).getLongitude()))
-                        .withIconImage("symbol_blue")
-                        .withIconSize(0.5f)
-                        .withDraggable(true)
-                        .withIconOpacity(0.0f)
-                        .withData(objD)
-                );
-            }
-        }
-
-        /*symbolManager.addClickListener(symbol -> {
-            // Log.e("EDITON - LAYERINDEX", String.valueOf(EDITON) + " - " + LAYERINDEX);
-            if (EDITON && LAYERINDEX >= 0) {
-                // Log.e("getIconOpacity SYMBOL", String.valueOf(symbol.getIconOpacity()));
-                if (symbol.getIconOpacity() > 0) {
-                    int flg = 0;
-                    if (SYMBOLACTIVE != null) {
-
-                        if (!symbol.equals(SYMBOLACTIVE)) {
-                            // Log.e("NOT EQUAL", "PREV");
-                            SYMBOLACTIVE.setDraggable(false);
-                            SYMBOLACTIVE.setIconImage("symbol_blue");
-                            SYMBOLACTIVE.setIconSize(0.3F);
-                            symbolManager.update(SYMBOLACTIVE);
-                            flg = 1;
-                        }
-                    } else {
-                        // Log.e("PREV SYMBOL", "NOT FOUND");
-                        flg = 1;
-                    }
-
-                    if (flg == 1) {
+            symbolManager.addClickListener(symbol -> {
+                // Log.e("EDITON - LAYERINDEX", String.valueOf(EDITON) + " - " + LAYERINDEX);
+                if (EDITON && LAYERINDEX >= 0) {
+                    // Log.e("getIconOpacity SYMBOL", String.valueOf(symbol.getIconOpacity()));
+                    if (symbol.getIconOpacity() > 0) {
+                        int flg = 0;
+                        JsonObject objD1 = (JsonObject) symbol.getData();
+                        int sIndex = objD1.get("sIndex").getAsInt();
+                        activeSymbolIndex = sIndex;
+                        Log.e(TAG, "drawSymbol: activeIndex  : " + activeSymbolIndex);
+//                        if(activeSymbolIndex > 0){
+//                            Log.e(TAG, "drawSymbol: ", );
+//                            symbol.setIconSize(0.7f);
+//                        }
+//                        Log.e(TAG, "drawSymbol: SYMBOLACTIVE : " + SYMBOLACTIVE);
+//                        if(SYMBOLACTIVE != null) {
+//                            SYMBOLACTIVE.setIconSize(0.5f);
+//                        }
                         SYMBOLACTIVE = symbol;
-                        symbol.setDraggable(true);
-                        symbol.setIconImage("symbol_yellow");
-                        symbol.setIconSize(0.5f);
                         symbolManager.update(symbol);
                         onSymbolSelected();
                         SELECTEDPOINTS = "lat : " + symbol.getLatLng().getLatitude() + " lng : " + symbol.getLatLng().getLongitude();
                         COMACT.segmentEvents(getActivity(), "Point selection for editing",
                                 String.valueOf(symbol.getLatLng().getLatitude()), MAPBOXMAP, String.valueOf(symbol.getLatLng().getLongitude()), "TAP_APOINT_TOEDIT");
-
                     }
                 }
-            }
-            return true;
-        });
-*/
-        symbolManager.addDragListener(new OnSymbolDragListener() {
-            LatLng previouscoord;
-            String strsubmit;
+                return true;
+            });
 
-            @Override
-            public void onAnnotationDragStarted(Symbol symbol) {
-                previouscoord = symbol.getLatLng();
-                onSymbolSelected();
-            }
+            symbolManager.addDragListener(new OnSymbolDragListener() {
+                LatLng previouscoord;
+                String strsubmit;
 
-            @Override
-            public void onAnnotationDrag(Symbol symbol) {
-                JsonObject objD = (JsonObject) symbol.getData();
-                int sIndex = objD.get("sIndex").getAsInt();
-                if (sIndex == 0 || sIndex == LASTINDEXOFSELECTEDPOLYGON) {
-                    LNGLATEDIT.get(LAYERINDEX).set(0, symbol.getLatLng());
-                    LNGLATEDIT.get(LAYERINDEX).set(LASTINDEXOFSELECTEDPOLYGON, symbol.getLatLng());
-                } else
-                    LNGLATEDIT.get(LAYERINDEX).set(sIndex, symbol.getLatLng());
-                redrawFarms();
-            }
-
-            @Override
-            public void onAnnotationDragFinished(Symbol symbol) {
-                strsubmit = "{\"lat\":" + "\"" + previouscoord.getLatitude() + "\"" + ",\"long\":" + "\"" + previouscoord.getLongitude() + "\"" + "},\"currentCoordinates\":{\"lat\":" + "\"" + symbol.getLatLng().getLatitude() + "\"" + ",\"long\":" + "\"" + symbol.getLatLng().getLongitude() + "\"" + "}";
-                COMACT.segmentEvents(getActivity(), "Point edit",
-                        "User moved a point by dragging it", MAPBOXMAP, strsubmit, "DRAG_APOINT_TOEDIT");
-                Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.borders_cant_intersect), Toast.LENGTH_SHORT);
-                if (ISINTERSECT == 1) {
-                    toast.show();
-//                    saveBounderyBtn.setVisibility(View.GONE);
+                @Override
+                public void onAnnotationDragStarted(Symbol symbol) {
+                    if (symbol.getIconOpacity() > 0) {
+                        previouscoord = symbol.getLatLng();
+                        JsonObject objD = (JsonObject) symbol.getData();
+                        int sIndex = objD.get("sIndex").getAsInt();
+                        activeSymbolIndex = sIndex;
+//                        if(activeSymbolIndex > 0){
+//                            symbol.setIconSize(0.7f);
+//                        }
+//                        Log.e(TAG, "onAnnotationDragStarted: SYMBOLACTIVE : " + SYMBOLACTIVE);
+//                        if(SYMBOLACTIVE != null) {
+//                            SYMBOLACTIVE.setIconSize(0.5f);
+//                        }
+                        SYMBOLACTIVE = symbol;
+                        onSymbolSelected();
+                    }
                 }
-//                else if (DRAWENABLE == 4) {
+
+                @Override
+                public void onAnnotationDrag(Symbol symbol) {
+                    if (symbol.getIconOpacity() > 0) {
+                        JsonObject objD = (JsonObject) symbol.getData();
+                        int sIndex = objD.get("sIndex").getAsInt();
+                        if (sIndex == 0 || sIndex == LASTINDEXOFSELECTEDPOLYGON) {
+                            LNGLATEDIT.get(LAYERINDEX).set(0, symbol.getLatLng());
+                            LNGLATEDIT.get(LAYERINDEX).set(LASTINDEXOFSELECTEDPOLYGON, symbol.getLatLng());
+                        } else
+                            LNGLATEDIT.get(LAYERINDEX).set(sIndex, symbol.getLatLng());
+                        Log.e(TAG, "onAnnotationDrag: size : " + LNGLATEDIT.get(LAYERINDEX).size());
+                        redrawFarms();
+                        if (LNGLATEDIT.get(LAYERINDEX).size() > 7) {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e(TAG, "run: after delay");
+//                                redrawFarms();
+                                }
+                            }, 150);
+                        } else {
+                            Log.e(TAG, "run: without delay");
+                            redrawFarms();
+                        }
+                        if (ISINTERSECT == 1) {
+                            saveEditBtn.setVisibility(View.GONE);
+                        } else {
 //                    messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
-////                    saveBounderyBtn.setVisibility(View.VISIBLE);
-//                }
-            }
-        });
+                            saveEditBtn.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+
+                @Override
+                public void onAnnotationDragFinished(Symbol symbol) {
+                    strsubmit = "{\"lat\":" + "\"" + previouscoord.getLatitude() + "\"" + ",\"long\":" + "\"" + previouscoord.getLongitude() + "\"" + "},\"currentCoordinates\":{\"lat\":" + "\"" + symbol.getLatLng().getLatitude() + "\"" + ",\"long\":" + "\"" + symbol.getLatLng().getLongitude() + "\"" + "}";
+                    COMACT.segmentEvents(getActivity(), "Point edit",
+                            "User moved a point by dragging it", MAPBOXMAP, strsubmit, "DRAG_APOINT_TOEDIT");
+                }
+            });
+
+        }
+        SYMBOLSET.add(symbolManagers);
+        if (LNGLATEDIT.get(idx).size() > 0) {
+            LASTINDEXOFSELECTEDPOLYGON = LNGLATEDIT.get(idx).size() - 1;
+        }
     }
 
     private void showAllLayers() {
@@ -393,44 +426,106 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         });
     }
 
+    private void deleteSymbol() {
+        if (activeSymbolIndex == 0) {
+            Toast.makeText(getContext(), "can't delete 1st point", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        MAPBOXMAP.getStyle(style -> {
+            Log.e(TAG, "deleteSymbol: LATLNGEDIT : " + LNGLATEDIT.size());
+
+            style.removeLayer("polyLayerID" + FINALFOUNDIDX);
+            style.removeLayer("lineLayerID" + FINALFOUNDIDX);
+            style.removeSource("polySourceID" + FINALFOUNDIDX);
+            style.removeSource("lineSourceID" + FINALFOUNDIDX);
+            for (SymbolManager sm:
+                    SYMBOLSET.get(FINALFOUNDIDX)) {
+                sm.deleteAll();
+            }
+//            SYMBOLSET.get(FINALFOUNDIDX).deleteAll();
+            SYMBOLSET = new ArrayList<>();
+            SYMBOLACTIVE = null;
+            LNGLATEDIT.get(FINALFOUNDIDX).remove(activeSymbolIndex);
+            trashBtn.setVisibility(View.GONE);
+            if (LNGLATEDIT.size() > 0) {
+                //  for (int i = 0; i < LNGLATEDIT.size(); i++) {
+                int i = FINALFOUNDIDX;
+                List<LatLng> ll = new ArrayList<>();
+                List<Point> llPts = new ArrayList<>();
+                for (int j = 0; j < LNGLATEDIT.get(i).size(); j++) {
+                    double lat = LNGLATEDIT.get(i).get(j).getLatitude();
+                    double lng = LNGLATEDIT.get(i).get(j).getLongitude();
+                    llPts.add(Point.fromLngLat(lng, lat));
+                    ll.add(new LatLng(lat, lng));
+                }
+                LNGLAT.add(ll);
+                LATLNGARR.add(llPts);
+//                    //   PIDX += 1;
+                COMACT.drawMapLayers(style, llPts, String.valueOf(i), "update");
+//                    Log.e(TAG, "onMapReady: layer id : " + style.getLayer("polyLayerID" + i).toString());
+                int middlepolyposition = LNGLAT.get(i).size() / 2;
+//                    if (KawaMap.isFormEnable)
+//                        drawSymbolsforPolygon(middlepolyposition, i);
+                drawSymbol(style, i, 1f);
+                messageBox.setText(getResources().getString(R.string.select_point_toedit));
+                messageBox.setBackgroundColor(KawaMap.headerBgColor);
+//                    Feature multiPointFeature = Feature.fromGeometry(Polygon.fromLngLats(LATLNGARR));
+//                    multiPointFeature.addStringProperty("area", String.valueOf(POLYGONAREA.get(i)));
+//                    BEFOREEDITLISTFEATURE.add(multiPointFeature.toJson());
+                //}
+            }
+
+        });
+
+
+    }
+
     private void showHideSymbol(String type, boolean discard) {
         if (SYMBOLSET.size() > 0) {
             // Log.e("SYMBOLSET", String.valueOf(SYMBOLSET.size()));
             for (int i = 0; i < SYMBOLSET.size(); i++) {
-                SymbolManager sm = SYMBOLSET.get(i);
-                if (sm != null) {
-                    // Log.e("SymbolManager", "not null");
-                    float opacity = 0.0f;
-                    if (LAYERINDEX == i && type.equals("show"))
-                        opacity = 1.0f;
+                List<SymbolManager> symbolManagers = SYMBOLSET.get(i);
+//                SymbolManager sm = SYMBOLSET.get(i);
+                for (SymbolManager sm:
+                        symbolManagers) {
+                    if (sm != null) {
+                        // Log.e("SymbolManager", "not null");
+                        float opacity = 0.0f;
+                        if (LAYERINDEX == i && type.equals("show"))
+                            opacity = 1.0f;
 
-                    LongSparseArray<Symbol> annotations = sm.getAnnotations();
-                    if (!annotations.isEmpty()) {
-                        if (annotations.size() > 0) {
-                            for (int j = 0; j < annotations.size(); j++) {
-                                Symbol symbol = annotations.get(j);
+                        LongSparseArray<Symbol> annotations = sm.getAnnotations();
+                        if (!annotations.isEmpty()) {
+                            if (annotations.size() > 0) {
+                                for (int j = 0; j < annotations.size(); j++) {
+                                    Symbol symbol = annotations.get(j);
+                                    if (discard && LAYERINDEX == i) {
+//                                    JsonObject symbolData = (JsonObject) symbol.getData();
+//                                    Integer sIndex = symbolData.get("sIndex").getAsInt();
+//                                    Integer lIndex = symbolData.get("lIndex").getAsInt();
+                                        LatLng latLng = LNGLATEDIT.get(i).get(j);
+                                        if (latLng != null)
+                                            setSymbolLL(symbol, latLng);
+                                    }
+                                    JsonObject objD = (JsonObject) symbol.getData();
+                                    int sIndex = objD.get("sIndex").getAsInt();
 
-                                if (discard && LAYERINDEX == i) {
-                                    JsonObject symbolData = (JsonObject) symbol.getData();
-                                    //Integer sIndex = symbolData.get("sIndex").getAsInt();
-                                    //Integer lIndex = symbolData.get("lIndex").getAsInt();
-                                    LatLng latLng = LNGLATEDIT.get(i).get(j);
-                                    if (latLng != null)
-                                        setSymbolLL(symbol, latLng);
-                                }
-
-                                if (opacity > 0 && symbol.getIconOpacity() <= 0 || opacity <= 0 && symbol.getIconOpacity() > 0) {
-                                    symbol.setIconOpacity(opacity);
-                                    symbol.setDraggable(true);
-                                    symbol.setIconImage("symbol_blue");
-                                    symbol.setIconSize(0.5f);
-                                    SYMBOLSET.get(i).update(symbol);
+                                    if (opacity > 0 && symbol.getIconOpacity() <= 0 || opacity <= 0 && symbol.getIconOpacity() > 0) {
+                                        symbol.setIconOpacity(opacity);
+                                        if (sIndex == 0)
+                                            symbol.setIconImage("symbol_active");
+                                        else
+                                            symbol.setIconImage("symbol_blue");
+                                        symbol.setIconSize(0.5f);
+                                        sm.update(symbol);
+                                    }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
+
             }
         }
     }
@@ -479,7 +574,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         } else
             LNGLATEDIT.get(LAYERINDEX).set(sIndex, symbol.getLatLng());
         symbol.setLatLng(latLng);
-        SYMBOLSET.get(LAYERINDEX).update(symbol);
+        SYMBOLSET.get(LAYERINDEX).get(activeSymbolIndex).update(symbol);
     }
 
     private void redrawFarms() {
@@ -489,12 +584,6 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                 List<List<Point>> llPtsA = new ArrayList<>();
                 for (int j = 0; j < LNGLATEDIT.get(LAYERINDEX).size(); j++) {
                     llPts.add(Point.fromLngLat(LNGLATEDIT.get(LAYERINDEX).get(j).getLongitude(), LNGLATEDIT.get(LAYERINDEX).get(j).getLatitude()));
-//                    Layer lineLayer = style.getLayer("lineLayerID" + j);
-//                    Layer polyLayer = style.getLayer("polyLayerID" + j);
-//                    if (lineLayer != null && polyLayer != null) {
-//                           lineLayer.setProperties(PropertyFactory.lineOpacity(1.0f));
-//                          polyLayer.setProperties(PropertyFactory.fillOpacity(0.6f));
-//                    }
                 }
                 llPtsA.add(llPts);
                 GeoJsonSource lineSourceID = style.getSourceAs("lineSourceID" + LAYERINDEX);
@@ -507,6 +596,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                 }
             });
             checkForIntersections();
+
         }
     }
 
@@ -527,6 +617,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         rightBtn = VIEW.findViewById(R.id.rightBtn);
         zoomInBtn = VIEW.findViewById(R.id.zoomInBtn);
         zoomOutBtn = VIEW.findViewById(R.id.zoomOutBtn);
+        trashBtn = VIEW.findViewById(R.id.trashBtn);
         markAnotherBtn = VIEW.findViewById(R.id.markAnotherBtn);
         exitBtn = VIEW.findViewById(R.id.exitBtn);
         detailsForm = VIEW.findViewById(R.id.detailsForm);
@@ -546,11 +637,12 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         downBtn.setOnClickListener(viewV -> moveSymbol("DOWN"));
         leftBtn.setOnClickListener(viewV -> moveSymbol("LEFT"));
         rightBtn.setOnClickListener(viewV -> moveSymbol("RIGHT"));
-        zoomInBtn.setOnClickListener(viewV -> COMACT.setZoomLevel(getActivity(),1, MAPBOXMAP));
-        zoomOutBtn.setOnClickListener(viewV -> COMACT.setZoomLevel(getActivity(),-1, MAPBOXMAP));
+        zoomInBtn.setOnClickListener(viewV -> COMACT.setZoomLevel(getActivity(), 1, MAPBOXMAP));
+        zoomOutBtn.setOnClickListener(viewV -> COMACT.setZoomLevel(getActivity(), -1, MAPBOXMAP));
+        trashBtn.setOnClickListener(viewV -> deleteSymbol());
         addMoreBtn.setOnClickListener(viewV -> onBackPressed());
         backBtn.setOnClickListener(viewV -> onBackPressed());
-        discardEditBtn.setOnClickListener(viewV -> discardEdit());
+        discardEditBtn.setOnClickListener(viewV -> discardEditNew());
         startOverBtn.setOnClickListener(view1 -> startOver("Start_over"));
         markAnotherBtn.setOnClickListener(view1 -> startOver("Mark_another"));
         exitBtn.setOnClickListener(view1 -> exitFunction());
@@ -611,7 +703,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
                 correctBoundryBtn,
         };
 //        KawaMap.setInnerButtonColor(innerButtons);
-        KawaMap.setInnerButtonColor(getActivity(),innerButtons);
+        KawaMap.setInnerButtonColor(getActivity(), innerButtons);
 
     }
 
@@ -651,6 +743,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         rightBtn.setVisibility(VIEW.GONE);
         zoomInBtn.setVisibility(VIEW.GONE);
         zoomOutBtn.setVisibility(VIEW.GONE);
+        trashBtn.setVisibility(VIEW.GONE);
         completeMarkingBtn.setVisibility(VIEW.GONE);
         saveDetailBtn.setVisibility(VIEW.GONE);
         saveEditBtn.setVisibility(VIEW.GONE);
@@ -661,9 +754,9 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
     private void onFarmsLoaded() {
         // Log.e("Called", "onFarmsLoaded");
         hideAllBtn();
-        if (KawaMap.isDrawEnable){
+        if (KawaMap.isDrawEnable) {
             completeMarking();
-        }else {
+        } else {
             addMoreBtn.setVisibility(VIEW.VISIBLE);
             startOverBtn.setVisibility(VIEW.VISIBLE);
             if (KawaMap.isEditEnable) {
@@ -714,6 +807,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
             String strSubmit = "{\"type\":\"FeatureCollection\", \"features\":" + selectedlistfeature + "}";
             COMACT.segmentEvents(getActivity(), "Farm selected for editing",
                     "User has selected a farm to edit,", MAPBOXMAP, strSubmit, "SINGLE_FARM_SELECTED");
+            changeBorderColor("#F7F14A", selectedindex, 0f);
 
         }
         hideAllBtn();
@@ -728,18 +822,64 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
     }
 
     private void onSymbolSelected() {
-        // Log.e("Called", "onSymbolSelected");
-        hideAllBtn();
-        zoomInBtn.setVisibility(VIEW.VISIBLE);
-        zoomOutBtn.setVisibility(VIEW.VISIBLE);
-        upBtn.setVisibility(VIEW.VISIBLE);
-        downBtn.setVisibility(VIEW.VISIBLE);
-        leftBtn.setVisibility(VIEW.VISIBLE);
-        rightBtn.setVisibility(VIEW.VISIBLE);
-        discardEditBtn.setVisibility(VIEW.VISIBLE);
-        saveEditBtn.setVisibility(VIEW.VISIBLE);
-        EDITON = true;
-        messageBox.setText(getResources().getString(R.string.drag_point_joystic));
+        Log.e("Called", "onSymbolSelected : activeSymboleIndex : " + activeSymbolIndex);
+        if(LAYERINDEX !=-1) {
+            hideAllBtn();
+            zoomInBtn.setVisibility(VIEW.VISIBLE);
+            zoomOutBtn.setVisibility(VIEW.VISIBLE);
+            upBtn.setVisibility(VIEW.VISIBLE);
+            downBtn.setVisibility(VIEW.VISIBLE);
+            leftBtn.setVisibility(VIEW.VISIBLE);
+            rightBtn.setVisibility(VIEW.VISIBLE);
+            discardEditBtn.setVisibility(VIEW.VISIBLE);
+            saveEditBtn.setVisibility(VIEW.VISIBLE);
+            if (LNGLATEDIT.get(FINALFOUNDIDX).size() > 5) {
+                trashBtn.setVisibility(View.VISIBLE);
+            }
+            EDITON = true;
+            messageBox.setText(getResources().getString(R.string.drag_point_joystic));
+        }
+    }
+
+    private void discardEditNew(){
+        MAPBOXMAP.getStyle( style -> {
+            Log.e(TAG, "deleteSymbol: LATLNGEDIT : " + LNGLATEDIT.size());
+
+            style.removeLayer("polyLayerID" + FINALFOUNDIDX);
+            style.removeLayer("lineLayerID" + FINALFOUNDIDX);
+            style.removeSource("polySourceID" + FINALFOUNDIDX);
+            style.removeSource("lineSourceID" + FINALFOUNDIDX);
+
+            LNGLATEDIT.clear();
+            LNGLATEDIT = new ArrayList<>();
+
+//            SYMBOLSET.get(FINALFOUNDIDX).deleteAll();
+            for (SymbolManager sm:
+                    SYMBOLSET.get(FINALFOUNDIDX)) {
+                sm.deleteAll();
+            }
+            SYMBOLSET = new ArrayList<>();
+            if (LNGLAT.size() > 0) {
+                //  for (int i = 0; i < LNGLATEDIT.size(); i++) {
+                List<LatLng> ll = new ArrayList<>();
+                List<Point> llPts = new ArrayList<>();
+                for (int j = 0; j < LNGLAT.get(FINALFOUNDIDX).size(); j++) {
+                    double lat = LNGLAT.get(FINALFOUNDIDX).get(j).getLatitude();
+                    double lng = LNGLAT.get(FINALFOUNDIDX).get(j).getLongitude();
+                    llPts.add(Point.fromLngLat(lng, lat));
+                    ll.add(new LatLng(lat, lng));
+                }
+
+                LNGLATEDIT.add(ll);
+                LATLNGARR.add(llPts);
+                COMACT.drawMapLayers(style, llPts, String.valueOf(FINALFOUNDIDX), "edit");
+                drawSymbol(style, FINALFOUNDIDX,0.0f);
+
+                showAllLayers();
+                onFarmsLoaded();
+            }
+
+        });
     }
 
     private void discardEdit() {
@@ -760,6 +900,10 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         showHideSymbol("hide", true);
         showAllLayers();
         onFarmsLoaded();
+        Log.e(TAG, "discardEdit:" + FINALFOUNDIDX);
+        Layer lineLayer = MAPBOXMAP.getStyle().getLayer("lineLayerID" + FINALFOUNDIDX);
+        lineLayer.setProperties(PropertyFactory.lineWidth(0.6f));
+        changeBorderColor("#000000", FINALFOUNDIDX, 0.6f);
         COMACT.segmentEvents(getActivity(), "Discard edits",
                 "User clicks on Discard edits", MAPBOXMAP, "discaard", "DISCARD");
     }
@@ -779,6 +923,9 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         Feature multiPointFeature = Feature.fromGeometry(Polygon.fromLngLats(aftfereditlatlng));
         multiPointFeature.addStringProperty("area", String.valueOf(POLYGONAREA.get(FINALFOUNDIDX)));
         aftereditlistfeature.add(multiPointFeature.toJson());
+        Layer lineLayer = MAPBOXMAP.getStyle().getLayer("lineLayerID" + FINALFOUNDIDX);
+        lineLayer.setProperties(PropertyFactory.lineWidth(0.6f));
+        changeBorderColor("#000000", FINALFOUNDIDX, 0.6f);
         String strJsonWrite = "{\"type\":\"FeatureCollection\", \"features\":" + aftereditlistfeature + "}";
         COMACT.segmentEvents(getActivity(), "Save edited boundary",
                 "User has Save edited boundary", MAPBOXMAP, strJsonWrite, "SAVE_EDITED_FARM");
@@ -904,7 +1051,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
             JsonObject submitJsonObject = JsonParser.parseString(strSubmit).getAsJsonObject();
             String strJsonWrite = "{\"type\":\"FeatureCollection\", \"features\":" + listFeatures + "}";
             detailsForm.setVisibility(View.GONE);
-            COMACT.showLoader(getActivity(),"isCircle");
+            COMACT.showLoader(getActivity(), "isCircle");
 
             ServiceManager.getInstance().getKawaService().sumbitPoints(KawaMap.KAWA_API_KEY, COMACT.SDK_VERSION, submitJsonObject).enqueue(new Callback<MergeModel>() {
                 @Override
@@ -1024,6 +1171,8 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         NOSYMBOLSET.add(symbolManager);
 
         style.addImage("psymbol_blue", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_blue));
+        style.addImage("symbol_active", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_activeb));
+
         if (LNGLATEDIT.get(polygonno).size() > 0) {
             JsonObject objD = new JsonObject();
 
@@ -1281,7 +1430,7 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         }
 
 
-        COMACT.showLoader(getActivity(),"isCircle");
+        COMACT.showLoader(getActivity(), "isCircle");
 
         AddressServiceManager.getInstance().getKawaService().getAddress("json", String.valueOf(mapLat), String.valueOf(mapLong))
                 .enqueue(new Callback<JsonObject>() {
@@ -1326,21 +1475,21 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
 
     private void checkForIntersections() {
         Point lnPoint1, lnPoint2, lnPoint3, lnPoint4;
-        int intersectionCheckLimit = LNGLATEDIT.get(0).size() - 2;
+        int intersectionCheckLimit = LNGLATEDIT.get(FINALFOUNDIDX).size() - 2;
         ISINTERSECT = 0;
-        changeBorderColor("#000000");
-        //messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
+        changeBorderColor("#F7F14A", FINALFOUNDIDX, 0f);
+        messageBox.setText(getResources().getString(R.string.drag_point_joystic));
         messageBox.setBackgroundColor(KawaMap.headerBgColor);
         if (LNGLATEDIT.get(0).size() > 2) {
             for (int j = 0; j < intersectionCheckLimit; j++) {
-                lnPoint1 = Point.fromLngLat(LNGLATEDIT.get(0).get(j).getLongitude(), LNGLATEDIT.get(0).get(j).getLatitude());
-                lnPoint2 = Point.fromLngLat(LNGLATEDIT.get(0).get(j + 1).getLongitude(), LNGLATEDIT.get(0).get(j + 1).getLatitude());
+                lnPoint1 = Point.fromLngLat(LNGLATEDIT.get(FINALFOUNDIDX).get(j).getLongitude(), LNGLATEDIT.get(FINALFOUNDIDX).get(j).getLatitude());
+                lnPoint2 = Point.fromLngLat(LNGLATEDIT.get(FINALFOUNDIDX).get(j + 1).getLongitude(), LNGLATEDIT.get(FINALFOUNDIDX).get(j + 1).getLatitude());
                 for (int k = 0; k <= intersectionCheckLimit; k++) {
                     if (k != j && k != (j + 1) && (k + 1) != j && (k + 1) != (j + 1)) {
-                        lnPoint3 = Point.fromLngLat(LNGLATEDIT.get(0).get(k).getLongitude(), LNGLATEDIT.get(0).get(k).getLatitude());
-                        lnPoint4 = Point.fromLngLat(LNGLATEDIT.get(0).get(k + 1).getLongitude(), LNGLATEDIT.get(0).get(k + 1).getLatitude());
+                        lnPoint3 = Point.fromLngLat(LNGLATEDIT.get(FINALFOUNDIDX).get(k).getLongitude(), LNGLATEDIT.get(FINALFOUNDIDX).get(k).getLatitude());
+                        lnPoint4 = Point.fromLngLat(LNGLATEDIT.get(FINALFOUNDIDX).get(k + 1).getLongitude(), LNGLATEDIT.get(FINALFOUNDIDX).get(k + 1).getLatitude());
                         if (lineIntersect(lnPoint1, lnPoint2, lnPoint3, lnPoint4)) {
-                            changeBorderColor("#ff0000");
+                            changeBorderColor("#ff0000", FINALFOUNDIDX, 0f);
                             messageBox.setText(getResources().getString(R.string.borders_cant_intersect));
                             messageBox.setBackgroundColor(getResources().getColor(R.color.mapboxRed));
                             ISINTERSECT = 1;
@@ -1384,18 +1533,15 @@ public class fragmentEditFarmBoundries extends Fragment implements OnMapReadyCal
         return false;
     }
 
-
-    private void changeBorderColor(String borderColorCode) {
+    private void changeBorderColor(String borderColorCode, int selectedidx, float opacity) {
         Style style = MAPBOXMAP.getStyle();
-        Log.e(TAG, "changeBorderColor: "+borderColorCode );
-        for (int k = 0; k < PIDX; k++) {
-            Layer lineLayer = style.getLayer("lineLayerID" + k);
-           // Layer polyLayer = style.getLayer("polyLayerIDDP" + k);
-            Integer borderColor = Color.parseColor(borderColorCode);
-            lineLayer.setProperties(PropertyFactory.lineColor(borderColor));
-//            polyLayer.setProperties(PropertyFactory.fillOpacity(0f));
 
-        }
+        Log.e(TAG, "changeBorderColor:fun " + selectedidx);
+        Layer lineLayer = style.getLayer("lineLayerID" + selectedidx);
+        Layer polyLayer = style.getLayer("polyLayerID" + selectedidx);
+        Integer borderColor = Color.parseColor(borderColorCode);
+        lineLayer.setProperties(PropertyFactory.lineColor(borderColor));
+        polyLayer.setProperties(PropertyFactory.fillOpacity(opacity));
     }
 
     @Override
