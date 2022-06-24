@@ -1,5 +1,8 @@
 package com.kawasdk.Utils;
 
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -42,6 +45,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
@@ -58,31 +62,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
+public class Common extends AppCompatActivity {
 
-public class Common {
-
-    private  Animation animVerticala;
-    public  ProgressDialog proDialog;
-//    public static Context context;
+    private static final String TAG = "Common";
+    private static Animation animVerticala;
+    public static ProgressDialog proDialog;
+    //    public static Context context;
     public ImageView imageline;
-    public  double MXCAMERALAT;
-    public  double MXCAMERALNG;
-    public  double CAMERALAT;
-    public  double CAMERALNG;
-    public  double MAXZOOM = 22.00;
-    public  double MINZOOM = 5.00;
-    public  double MAPZOOM = 17.00;
+    public static double MXCAMERALAT;
+    public static double MXCAMERALNG;
+    public static double CAMERALAT;
+    public static double CAMERALNG;
+    public static double MAXZOOM = 22.00;
+    public static double MINZOOM = 5.00;
+    public static double MAPZOOM = 17.00;
     public  ProgressBar PROGRESSBAR;
     public  String MAPBOX_ACCESS_TOKEN = "";
-    //public  final String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoicnVwZXNoamFpbiIsImEiOiJja3JwdmdneGU1NHlxMnpwODN6bzFpbnkwIn0.UgSIBr9ChJFyrAKxtdNf9w"; // OLd MAPBOX TOKEN
+    //public static final String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoicnVwZXNoamFpbiIsImEiOiJja3JwdmdneGU1NHlxMnpwODN6bzFpbnkwIn0.UgSIBr9ChJFyrAKxtdNf9w"; // OLd MAPBOX TOKEN
     public static final String BASE_URL = "https://data.kawa.space/"; // live url
     public static final String ADRESS_URL = "https://nominatim.openstreetmap.org/"; // live url
-//    public static final String BASE_URL = "https://data-staging.kawa.space/"; // test url
+    //    public static final String BASE_URL = "https://data-staging.kawa.space/"; // test url
     public static final String SDK_VERSION = android.os.Build.VERSION.SDK;
     private static final int PERMISSION_REQUEST_CODE = 100;
     public static String FARMS_FETCHED_AT = "";
+    public InterfaceKawaEvents interfaceKawaEvents;
     public static String SEGMENT_KEY = "IKuQjAPnvs0jDZtAj2z52b7yuDrjM1Zm";
     public static String USER_NAME; // for avoid submit api call
     public static String USER_ADDRESS; // for avoid submit api call
@@ -97,11 +100,10 @@ public class Common {
     // 'en' for english lanuage.
     public static String LANGUAGE = "en";
 
-    public Common( String token) {
-       // this.context = context;
-        MAPBOX_ACCESS_TOKEN = token; // MAPBOX TOKEN
+    public Common(Context context) {
+        // this.context = context;
+        MAPBOX_ACCESS_TOKEN = context.getResources().getString(R.string.mapbox_api_key); // MAPBOX TOKEN
     }
-
 
     public void drawMapLayers(Style style, List<Point> llPts, String id, String type) {
         List<List<Point>> llPtsA = new ArrayList<>();
@@ -113,15 +115,26 @@ public class Common {
         Integer borderColor = Color.parseColor("#000000");
 
         if(type.equals("TranStyle")) {
-            borderColor = Color.parseColor("#F7F14A");
+            borderColor  =Color.parseColor("#F7F14A");
             borderL = 2f;
             opacityP = 0.0f;
         }
 
+        if(type.equals("update")){
+            opacityL = 1.0f;
+            borderL = 2f;
+            Log.e(TAG, "drawMapLayers: I am here" );
+            color = Color.parseColor("#c9577e");
+            opacityP = 0.0f;
+            borderColor  =Color.parseColor("#F7F14A");
+//            Toast.makeText(this, "I am here", Toast.LENGTH_SHORT).show();
+        }
+
         if (type.equals("edit")) {
             opacityL = 1.0f;
+            borderL = 0.6f;
             color = Color.parseColor("#c9577e");
-        } else {
+        } else if(!type.equals("update") && !type.equals("edit")){
             Random random = new Random();
             int colorR = Color.rgb(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             color = Integer.parseInt(String.valueOf(colorR));
@@ -137,10 +150,16 @@ public class Common {
                 PropertyFactory.lineColor(borderColor),
                 PropertyFactory.lineOpacity(opacityL)
         ));
+
+//        for (Layer layer :
+//             style.getLayers()) {
+//            Log.e(TAG, "drawMapLayers: layer ID : " + layer.getId() );
+//        }
+
     }
 
     public void initMarker(Context context,Style style, MapboxMap MAPBOXMAP, MapView MAPVIEW) {
-        InterfaceKawaEvents interfaceKawaEvents = (InterfaceKawaEvents) context;
+        interfaceKawaEvents = (InterfaceKawaEvents) context;
         Bitmap marker_image = BitmapFactory.decodeResource(context.getResources(), R.drawable.marker);
         addMarker(style, marker_image);
         MAPBOXMAP.addOnMoveListener(new MapboxMap.OnMoveListener() {
@@ -304,7 +323,7 @@ public class Common {
             JSONObject jsonObject = new JSONObject();
             JSONObject centerPointobject = new JSONObject();
 
-            InterfaceKawaEvents interfaceKawaEvents = listner;
+            interfaceKawaEvents = listner;
             if (interfaceKawaEvents != null) {
                 centerPointobject.put("latitude", CAMERALAT);
                 centerPointobject.put("longitude", CAMERALAT);
@@ -333,20 +352,20 @@ public class Common {
                 context.getBaseContext().getResources().getDisplayMetrics());
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        switch (requestCode) {
-//            case PERMISSION_REQUEST_CODE:
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    // Log.e("value", "Permission Granted, Now you can use local drive .");
-//                } else {
-//                    // Log.e("value", "Permission Denied, You cannot use local drive .");
-//                  //  Toast.makeText(context, "Cannot save farms.", Toast.LENGTH_LONG).show();
-//                }
-//                break;
-//        }
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Log.e("value", "Permission Granted, Now you can use local drive .");
+                } else {
+                    // Log.e("value", "Permission Denied, You cannot use local drive .");
+                    //  Toast.makeText(context, "Cannot save farms.", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
 
     public void smartlookEvent(String eventName) {
         JSONObject props = new JSONObject();
@@ -481,4 +500,3 @@ public class Common {
     }
 
 }
-

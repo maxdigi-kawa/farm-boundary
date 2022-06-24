@@ -1,5 +1,7 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -93,8 +95,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
-
 public class fragmentFarmLocation extends Fragment implements OnMapReadyCallback, PlaceSearchAdapter.PlaceSearchItemClickListener, LocationAdapter.LocationItemClickListener, MapboxMap.OnMapClickListener {
 
     Intent intent;
@@ -105,7 +105,7 @@ public class fragmentFarmLocation extends Fragment implements OnMapReadyCallback
     AppCompatButton GET_FARMSBtn;
     ImageButton zoomOutBtn, zoomInBtn, dropPinFab;
     EditText searchTxt;
-    TextView messageBox;
+    TextView messageBox,versionName;
     ActivityResultLauncher<Intent> SEARCHRESULT;
     InterfaceKawaEvents interfaceKawaEvents;
     int firstTimecnt = 0;
@@ -174,6 +174,7 @@ public class fragmentFarmLocation extends Fragment implements OnMapReadyCallback
         searchTxt = view.findViewById(R.id.searchTxt);
         buttonSearchClear = view.findViewById(R.id.button_search_clear);
         messageBox = view.findViewById(R.id.messageBox);
+        versionName = view.findViewById(R.id.versionName);
         dropdownBtn = view.findViewById(R.id.dropdownBtn);
         messageBox.setBackgroundColor(KawaMap.headerBgColor);
         messageBox.setTextColor(KawaMap.headerTextColor);
@@ -193,6 +194,8 @@ public class fragmentFarmLocation extends Fragment implements OnMapReadyCallback
         placeSearchAdapter.setClickListener(this);
         place_recyclerView.setAdapter(placeSearchAdapter);
         powerdByIV.setVisibility(View.GONE);
+        if(KawaMap.isDevelop)
+            versionName.setVisibility(View.VISIBLE);
         if (KawaMap.isFlyToLocationEnable) {
             getAllLocation();
             locationlist_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

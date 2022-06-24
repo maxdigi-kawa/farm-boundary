@@ -121,6 +121,19 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/trashBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_above="@+id/GET_FARMSBtn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/style_circle"
+            android:src="@drawable/ic_delete"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxBlack"
+            app:tint="@android:color/white" />
+
+        <ImageButton
             android:id="@+id/zoomInBtn"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -137,11 +150,12 @@
             android:layout_marginLeft="16dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/style_rounded_corner_bottom"
-
             android:src="@drawable/ic_minus"
             android:textColor="@color/mapboxWhite"
             android:visibility="gone"
             app:backgroundTint="@color/mapboxBlack" />
+
+
 
 
         <Button
@@ -219,21 +233,21 @@
 
 
 
-<!--        <Button-->
-<!--            android:id="@+id/saveDetailnNextBtn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_marginLeft="-5dp"-->
-<!--            android:layout_marginTop="-5dp"-->
-<!--            android:layout_marginRight="-5dp"-->
-<!--            android:layout_marginBottom="-5dp"-->
-<!--            android:foreground="@drawable/riipleeffectbuttons"-->
-<!--            android:text="@string/save_n_gonext"-->
-<!--            android:textAlignment="center"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:textColor="@color/mapboxWhite"-->
-<!--            android:visibility="gone"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+        <!--        <Button-->
+        <!--            android:id="@+id/saveDetailnNextBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/save_n_gonext"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxWhite"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/genrateReportBtn"
@@ -249,22 +263,22 @@
             android:textColor="@color/mapboxWhite"/>
 
 
-<!--        <Button-->
-<!--            android:id="@+id/genrateReportBtn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_marginLeft="-5dp"-->
-<!--            android:layout_marginTop="-5dp"-->
-<!--            android:layout_marginRight="-5dp"-->
-<!--            android:layout_marginBottom="-5dp"-->
-<!--            android:foreground="@drawable/riipleeffectbuttons"-->
-<!--            android:text="@string/genrate_farm_repory"-->
-<!--            android:textAlignment="center"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:textColor="@color/mapboxWhite"-->
-<!--            android:visibility="gone"-->
-<!--            app:cornerRadius="0dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+        <!--        <Button-->
+        <!--            android:id="@+id/genrateReportBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginLeft="-5dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginRight="-5dp"-->
+        <!--            android:layout_marginBottom="-5dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/genrate_farm_repory"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/mapboxWhite"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:cornerRadius="0dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
 
         <LinearLayout
             android:id="@+id/anotherndExitLayout"
@@ -288,19 +302,19 @@
                 android:foreground="@drawable/riipleeffectbuttons"
                 android:textColor="@color/mapboxWhite"/>
 
-<!--            <Button-->
-<!--                android:id="@+id/markAnotherBtn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="60dp"-->
-<!--                android:layout_weight="1"-->
-<!--                android:foreground="@drawable/riipleeffectbuttons"-->
-<!--                android:text="@string/mark_another"-->
-<!--                android:textAlignment="center"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/mapboxWhite"-->
-<!--                android:visibility="visible"-->
-<!--                app:cornerRadius="0dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+            <!--            <Button-->
+            <!--                android:id="@+id/markAnotherBtn"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="60dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:foreground="@drawable/riipleeffectbuttons"-->
+            <!--                android:text="@string/mark_another"-->
+            <!--                android:textAlignment="center"-->
+            <!--                android:textAllCaps="false"-->
+            <!--                android:textColor="@color/mapboxWhite"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:cornerRadius="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/exitBtn"
@@ -318,24 +332,24 @@
                 android:foreground="@drawable/riipleeffectbuttons"
                 android:textColor="@color/mapboxWhite"/>
 
-<!--            <Button-->
-<!--                android:id="@+id/exitBtn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="60dp"-->
-<!--                android:layout_marginLeft="-5dp"-->
-<!--                android:layout_marginTop="-5dp"-->
-<!--                android:layout_marginRight="-5dp"-->
-<!--                android:layout_marginBottom="-5dp"-->
-<!--                android:layout_weight="1"-->
-<!--                android:backgroundTint="@color/orange"-->
-<!--                android:foreground="@drawable/riipleeffectbuttons"-->
-<!--                android:text="@string/exitStr"-->
-<!--                android:textAlignment="center"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/mapboxWhite"-->
-<!--                android:visibility="visible"-->
-<!--                app:cornerRadius="0dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
+            <!--            <Button-->
+            <!--                android:id="@+id/exitBtn"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="60dp"-->
+            <!--                android:layout_marginLeft="-5dp"-->
+            <!--                android:layout_marginTop="-5dp"-->
+            <!--                android:layout_marginRight="-5dp"-->
+            <!--                android:layout_marginBottom="-5dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:backgroundTint="@color/orange"-->
+            <!--                android:foreground="@drawable/riipleeffectbuttons"-->
+            <!--                android:text="@string/exitStr"-->
+            <!--                android:textAlignment="center"-->
+            <!--                android:textAllCaps="false"-->
+            <!--                android:textColor="@color/mapboxWhite"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:cornerRadius="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/mapView" />-->
 
         </LinearLayout>
     </LinearLayout>

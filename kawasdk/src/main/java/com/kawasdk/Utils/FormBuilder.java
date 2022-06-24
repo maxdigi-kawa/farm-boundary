@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class FormBuilder  {
+public class FormBuilder extends AppCompatActivity {
 
     public static EditText editFiled(Context context, JSONObject jsonObject, LinearLayout.LayoutParams editTextLayoutParams) {
         EditText rowEditView = new EditText(context);

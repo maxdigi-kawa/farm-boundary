@@ -224,6 +224,18 @@
 <!--            android:textAllCaps="false"-->
 <!--            android:textColor="@color/whitePressed" />-->
 
+        <TextView
+            android:id="@+id/versionName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_gravity="end"
+            android:visibility="gone"
+            android:layout_marginRight="16dp"
+            android:text="SDK V. -1.6.3"
+            android:textSize="20dp"
+            android:textColor="#fff" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/GET_FARMSBtn"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"

@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_kawa_home.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/edit_farm_boundries.xml" value="0.184375" />
+        <entry key="app/src/main/res/layout/select_farm_location.xml" value="0.1" />
         <entry key="app/src/main/res/layout/show_all_farms.xml" value="0.13728470111448834" />
+        <entry key="kawasdk/src/main/res/layout/edit_farm_boundries.xml" value="0.184375" />
+        <entry key="kawasdk/src/main/res/layout/select_farm_location.xml" value="0.1" />
       </map>
     </option>
   </component>

@@ -1,5 +1,7 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,8 +70,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
     private Common COMACT;
@@ -437,7 +437,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
         String strMerge = "{\"farms_fetched_at\":" + "\"" + COMACT.FARMS_FETCHED_AT + "\"" + ",\"recipe_id\":\"farm_boundaries\",\"aois\":" + String.valueOf(listFeatures) + "}";
         JsonObject selectedFarms = JsonParser.parseString(strMerge).getAsJsonObject();
-        interfaceKawaEvents.onkawaSelect(selectedFarms.toString());
+        interfaceKawaEvents.onkawaSelect(selectedFarms);
         //Phase second
         COMACT.showLoader(getActivity(),"isCircle");
         ServiceManager.getInstance().getKawaService().getMergedPoints(KawaMap.KAWA_API_KEY, COMACT.SDK_VERSION, selectedFarms).enqueue(new Callback<MergeModel>() {
@@ -666,12 +666,6 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         LASTINDEXOFSELECTEDPOLYGON = DRAWLNGLAT.get(0).size();
 
         objD.addProperty("sIndex", j);
-//        boolean draggable = true;
-//        String icon_name = "symbol_blue";
-//        if (j == 0)
-//            icon_name = "symbol_active";
-//        else
-//            draggable = true;
         symbolManager.create(new SymbolOptions()
                 .withLatLng(new LatLng(DRAWLNGLAT.get(0).get(j).getLatitude(), DRAWLNGLAT.get(0).get(j).getLongitude()))
                 .withIconImage("symbol_blue")
@@ -680,41 +674,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
                 .withIconOpacity(0.8f)
                 .withData(objD)
         );
-//        symbolManager.addClickListener(symbol -> {
-//            JsonObject objS = (JsonObject) symbol.getData();
-//            int symbolIndex = objS.get("sIndex").getAsInt();
-//            if ( symbolIndex == 0) {
-//            }
-//
-//            /*if (EDITON) {
-//                if (symbol.getIconOpacity() > 0) {
-//                    int flg = 0;
-//                    if (SYMBOLACTIVE != null) {
-//
-//                        if (!symbol.equals(SYMBOLACTIVE)) {
-//                            SYMBOLACTIVE.setDraggable(true);
-//                            SYMBOLACTIVE.setIconImage("symbol_blue");
-//                            SYMBOLACTIVE.setIconSize(0.3F);
-//                            symbolManager.update(SYMBOLACTIVE);
-//                            flg = 1;
-//                        }
-//                    } else {
-//                        flg = 1;
-//                    }
-//
-//                    if (flg == 1) {
-//                        SYMBOLACTIVE = symbol;
-//                        symbol.setDraggable(true);
-//                        symbol.setIconImage("symbol_yellow");
-//                        symbol.setIconSize(0.5f);
-//                        symbolManager.update(symbol);
-//                        // onSymbolSelected();
-//
-//                    }
-//                }
-//            }*/
-//            return true;
-//        });
+
 
         symbolManager.addDragListener(new OnSymbolDragListener() {
             @Override

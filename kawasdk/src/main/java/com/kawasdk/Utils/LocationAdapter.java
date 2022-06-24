@@ -9,9 +9,12 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kawasdk.Fragment.fragmentFarmLocation;
+import com.kawasdk.Model.LocationModel.LocationModel;
 import com.kawasdk.R;
 
 import java.util.List;
+
+import retrofit2.Callback;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHolder> {
 
