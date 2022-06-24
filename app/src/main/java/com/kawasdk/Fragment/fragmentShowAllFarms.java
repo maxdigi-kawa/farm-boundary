@@ -1,14 +1,14 @@
 package com.kawasdk.Fragment;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,15 +34,12 @@ import com.kawasdk.Model.PolygonModel;
 import com.kawasdk.Model.ResponseKawa;
 import com.kawasdk.R;
 import com.kawasdk.Utils.Common;
-import com.kawasdk.Utils.Common;
 import com.kawasdk.Utils.InterfaceKawaEvents;
 import com.kawasdk.Utils.KawaMap;
 import com.kawasdk.Utils.ServiceManager;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
-import com.mapbox.geojson.MultiPoint;
-import com.mapbox.geojson.MultiPolygon;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -53,8 +50,6 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.Line;
-import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
@@ -62,10 +57,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.turf.TurfJoins;
 import com.mapbox.turf.TurfMeasurement;
-import com.mapbox.turf.TurfMisc;
-import com.mapbox.turf.models.LineIntersectsResult;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -73,7 +65,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -81,44 +72,48 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
-    private Common common;
-    private MapboxMap mapboxMap;
-    private MapView mapview;
-    private String STRID = "";
+    private Common COMACT;
+    private MapboxMap MAPBOXMAP;
+    private MapView MAPVIEW;
+    String STRID = "";
     private List<Integer> POLYSELECTED = new ArrayList<>();
     private List<List<LatLng>> LNGLAT = new ArrayList<>();
-    private Button startOverBtn, drawBounderyBtn;
-    private AppCompatButton combinePlotBtn, saveBounderyBtn, resetBtn, clearBtn;
-    private TextView messageBox;
-    private LinearLayout clearNExitLayout;
-    private Float AREA;
+    Button startOverBtn, drawBounderyBtn;
+    AppCompatButton combinePlotBtn, saveBounderyBtn, resetBtn, clearBtn;
+    TextView messageBox;
+    LinearLayout clearNExitLayout;
+    InterfaceKawaEvents interfaceKawaEvents;
+    Float AREA;
     private ArrayList AREAARRAY = new ArrayList();
-    private ArrayList POLYGONAREA = new ArrayList<>();
-    private int DRAWENABLE = 0;
-    private List<SymbolManager> SYMBOLSET = new ArrayList<>();
+    ArrayList POLYGONAREA = new ArrayList<>();
+    int DRAWENABLE = 0;
+    private static List<SymbolManager> SYMBOLSET = new ArrayList<>();
     private List<List<LatLng>> DRAWLNGLAT = new ArrayList<>();
     private List<List<LatLng>> TEMPDRAWLNGLAT = new ArrayList<>();
     private boolean EDITON = false;
-    private List<LatLng> LLARRAY = new ArrayList<>();
-    private List<Point> LATLNGPTS = new ArrayList<>();
-    private LatLng FIRSTPOINTOFPOLY = new LatLng();
-    private Integer LASTINDEXOFSELECTEDPOLYGON;
-    private int PIDX = 0;
-    private int ISINTERSECT = 0;
+    private static Symbol SYMBOLACTIVE;
+    List<LatLng> LLARRAY = new ArrayList<>();
+    List<Point> LATLNGPTS = new ArrayList<>();
+    LatLng FIRSTPOINTOFPOLY = new LatLng();
+    Integer LASTINDEXOFSELECTEDPOLYGON;
+    int PIDX = 0;
     SymbolManager symbolManager;
+    int ISINTERSECT = 0;
+
     @Override
     public void onAttach(@NonNull @NotNull Context context) {
         super.onAttach(context);
-        //interfaceKawaEvents = (InterfaceKawaEvents) context;
+        interfaceKawaEvents = (InterfaceKawaEvents) context;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        common = new Common(getResources().getString(R.string.mapbox_api_key));
-        Mapbox.getInstance(getContext(), common.MAPBOX_ACCESS_TOKEN);
-        common.showLoader(getContext(), "isScanner");
+        COMACT = new Common(getActivity());
+        Mapbox.getInstance(getActivity(), COMACT.MAPBOX_ACCESS_TOKEN);
+        COMACT.showLoader(getActivity(),"isScanner");
         KawaMap.isDrawEnable = false;
+
     }
 
     @Override
@@ -130,24 +125,28 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         super.onCreate(savedInstanceState);
+
         // X_API_KEY = getResources().getString(R.string.kawa_api_key);
-        mapview = view.findViewById(R.id.mapView);
-        mapview.getMapAsync(this);
+
+        MAPVIEW = view.findViewById(R.id.mapView);
+        MAPVIEW.onCreate(savedInstanceState);
+        MAPVIEW.getMapAsync(this);
         STRID = getArguments().getString("id");
-        common.CAMERALAT = getArguments().getDouble("lat", 0.00);
-        common.CAMERALNG = getArguments().getDouble("lng", 0.00);
-        common.MAPZOOM = getArguments().getDouble("zoom", 16.0);
+        COMACT.CAMERALAT = getArguments().getDouble("lat", 0.00);
+        COMACT.CAMERALNG = getArguments().getDouble("lng", 0.00);
+        COMACT.MAPZOOM = getArguments().getDouble("zoom", 16.0);
+
         messageBox = view.findViewById(R.id.messageBox);
-//        messageBox.setBackgroundColor(KawaMap.headerBgColor);
-//        messageBox.setTextColor(KawaMap.headerTextColor);
+        messageBox.setBackgroundColor(KawaMap.headerBgColor);
+        messageBox.setTextColor(KawaMap.headerTextColor);
         combinePlotBtn = view.findViewById(R.id.combinePlotBtn);
-//        combinePlotBtn.setTextColor(KawaMap.footerBtnTextColor);
+        combinePlotBtn.setTextColor(KawaMap.footerBtnTextColor);
 //        combinePlotBtn.setBackground(KawaMap.footerBtnBgColor);
         combinePlotBtn.setVisibility(View.GONE);
         startOverBtn = view.findViewById(R.id.startOverBtn);
         drawBounderyBtn = view.findViewById(R.id.drawBounderyBtn);
         saveBounderyBtn = view.findViewById(R.id.saveBounderyBtn);
-//        saveBounderyBtn.setTextColor(KawaMap.footerBtnTextColor);
+        saveBounderyBtn.setTextColor(KawaMap.footerBtnTextColor);
         resetBtn = view.findViewById(R.id.resetBtn);
         clearBtn = view.findViewById(R.id.clearBtn);
         clearNExitLayout = view.findViewById(R.id.clearNExitLayout);
@@ -156,13 +155,13 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         //  resetBtn.setBackgroundColor(orangeColor);
         Button[] innerButtons = null;
         innerButtons = new Button[]{startOverBtn, drawBounderyBtn};
-//        KawaMap.setInnerButtonColor(getActivity(), innerButtons);
-//        Button[] footerButtons = null;
-//        footerButtons = new Button[]{
-//                saveBounderyBtn,
-//                combinePlotBtn
-//        };
-//        KawaMap.setFooterButtonColor(footerButtons);
+        KawaMap.setInnerButtonColor(getActivity(), innerButtons);
+        Button[] footerButtons = null;
+        footerButtons = new Button[]{
+                saveBounderyBtn,
+                combinePlotBtn
+        };
+        KawaMap.setFooterButtonColor(footerButtons);
 
         startOverBtn.setOnClickListener(view1 -> startOver());
         drawBounderyBtn.setOnClickListener(view1 -> DrawBounderyBtnClick());
@@ -182,24 +181,24 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-        this.mapboxMap = mapboxMap;
+        MAPBOXMAP = mapboxMap;
         SYMBOLSET = new ArrayList<>();
-        this.mapboxMap.getUiSettings().setCompassEnabled(false);
-        this.mapboxMap.getUiSettings().setLogoEnabled(false);
-        this.mapboxMap.getUiSettings().setFlingVelocityAnimationEnabled(false);
-        //    mapboxMap.getUiSettings().setScrollGesturesEnabled(false); // Disable Scroll
-        //mapboxMap.setMinZoomPreference(common.MAPZOOM);
-        this.mapboxMap.setStyle(Style.SATELLITE_STREETS, style -> {
-            this.mapboxMap.addOnMapClickListener(this);
-            LatLng latLng = new LatLng(common.CAMERALAT, common.CAMERALNG);
-            this.mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(latLng).zoom(common.MAPZOOM).build()), 1000);
-            common.initMarker(getActivity(), style, this.mapboxMap, mapview);
+        MAPBOXMAP.getUiSettings().setCompassEnabled(false);
+        MAPBOXMAP.getUiSettings().setLogoEnabled(false);
+        MAPBOXMAP.getUiSettings().setFlingVelocityAnimationEnabled(false);
+        //    MAPBOXMAP.getUiSettings().setScrollGesturesEnabled(false); // Disable Scroll
+        //MAPBOXMAP.setMinZoomPreference(COMACT.MAPZOOM);
+        MAPBOXMAP.setStyle(Style.SATELLITE_STREETS, style -> {
+            MAPBOXMAP.addOnMapClickListener(this);
+            LatLng latLng = new LatLng(COMACT.CAMERALAT, COMACT.CAMERALNG);
+            MAPBOXMAP.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(latLng).zoom(COMACT.MAPZOOM).build()), 1000);
+            COMACT.initMarker(getActivity(),style, MAPBOXMAP, MAPVIEW);
 
             new android.os.Handler(Looper.getMainLooper()).postDelayed(
                     new Runnable() {
                         public void run() {
-                            common.MAPZOOM = common.MAPZOOM - 2;
-                            common.lockZoom(mapboxMap);
+                            COMACT.MAPZOOM = COMACT.MAPZOOM - 2;
+                            COMACT.lockZoom(MAPBOXMAP);
                         }
                     },
                     1000);
@@ -212,7 +211,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         if (DRAWENABLE == 1) {
             drawBoundery(coordsOfPoint);
         } else if (DRAWENABLE == 4) {
-            EDITON = true;
+//            EDITON = true;
 //            if (SYMBOLACTIVE == null) {
 //                if (DRAWLNGLAT.size() > 0) {
 //                     onMaboxMapClick(coordsOfPoint);
@@ -220,10 +219,10 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 //            }
         } else {
             if (LNGLAT.size() > 0) {
-                mapboxMap.getStyle(style -> {
+                MAPBOXMAP.getStyle(style -> {
                     for (int i = 0; i < LNGLAT.size(); i++) {
                         boolean contains;
-                        contains = common.checkLatLongInPolygon(coordsOfPoint, LNGLAT.get(i));
+                        contains = COMACT.checkLatLongInPolygon(coordsOfPoint, LNGLAT.get(i));
                         if (contains) {
                             Layer lineLayer = style.getLayer("lineLayerID" + i);
                             if (lineLayer != null) {
@@ -234,16 +233,16 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
                                     if (POLYSELECTED.contains(i)) {
                                         flg = 1;
                                         POLYSELECTED.remove((Integer) i);
-                                        common.segmentEvents(getActivity(), "Farm boundary Selection",
-                                                "deselect", mapboxMap, "null", "FARMS_SELECTION");
+                                        COMACT.segmentEvents(getActivity(), "Farm boundary Selection",
+                                                "deselect", MAPBOXMAP, "null", "FARMS_SELECTION");
                                     }
                                 }
 
                                 if (flg == 0) {
                                     POLYSELECTED.add(i);
                                     lineLayer.setProperties(PropertyFactory.lineOpacity(1f));
-                                    common.segmentEvents(getActivity(), "Farm boundary Selection",
-                                            "select", mapboxMap, getSelectedLatLng(), "FARMS_SELECTION");
+                                    COMACT.segmentEvents(getActivity(), "Farm boundary Selection",
+                                            "select", MAPBOXMAP, getSelectedLatLng(), "FARMS_SELECTION");
 
                                 } else {
                                     lineLayer.setProperties(PropertyFactory.lineOpacity(0f));
@@ -273,18 +272,18 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         PIDX = 0;
         DRAWENABLE = 0;
 
-        ServiceManager.getInstance().getKawaService().status(KawaMap.KAWA_API_KEY, common.SDK_VERSION, STRID).enqueue(new Callback<PolygonModel>() {
+        ServiceManager.getInstance().getKawaService().status(KawaMap.KAWA_API_KEY, COMACT.SDK_VERSION, STRID).enqueue(new Callback<PolygonModel>() {
             @Override
             public void onResponse(@NonNull Call<PolygonModel> call, @NonNull Response<PolygonModel> response) {
 
                 try {
                     if (response.isSuccessful()) {
-                        common.hideLoader();
+                        COMACT.hideLoader();
                         if (response.body() != null) {
 
-                            common.segmentEvents(getActivity(), "Farm Boundary Response",
-                                    "Farm Boundary Response", mapboxMap, String.valueOf(new Gson().toJson(response.body())), "GET_ALL_POLYGON_DATA");
-                            common.FARMS_FETCHED_AT = response.body().getData().GET_FARMSs_fetched_at();
+                            COMACT.segmentEvents(getActivity(), "Farm Boundary Response",
+                                    "Farm Boundary Response", MAPBOXMAP, String.valueOf(new Gson().toJson(response.body())), "GET_ALL_POLYGON_DATA");
+                            COMACT.FARMS_FETCHED_AT = response.body().getData().GET_FARMSs_fetched_at();
                             List<Boundary> newListBoundry = response.body().getData().getBoundaries();
                             if (newListBoundry.size() > 0) {
 
@@ -307,7 +306,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
                                     llPtsA.add(llPts);
                                     LNGLAT.add(ll);
-                                    common.drawMapLayers(style, llPts, String.valueOf(i), "list");
+                                    COMACT.drawMapLayers(style, llPts, String.valueOf(i), "list");
                                     if (POLYSELECTED.contains(i)) {
                                         Layer lineLayer = style.getLayer("lineLayerID" + i);
                                         if (lineLayer != null) {
@@ -332,32 +331,31 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
                             }
                         }
                     } else {
-                        common.hideLoader();
+                        COMACT.hideLoader();
                         if (response.errorBody() != null) {
                             JSONObject jsonObj = new JSONObject(response.errorBody().string());
-                            Toast.makeText(getContext(), jsonObj.getString("error"), Toast.LENGTH_LONG).show();// this will tell you why your api doesnt work most of time
+                            Toast.makeText(getApplicationContext(), jsonObj.getString("error"), Toast.LENGTH_LONG).show();// this will tell you why your api doesnt work most of time
                         }
                     }
                 } catch (Exception e) {
-                    common.hideLoader();
+                    COMACT.hideLoader();
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<PolygonModel> call, @NonNull Throwable t) {
-                common.hideLoader();
+                COMACT.hideLoader();
                 String errorBody = t.getMessage();
-                Toast.makeText(getContext(), errorBody, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), errorBody, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void getMergedCordinates() throws JSONException {
         if (POLYSELECTED.size() > 0) {
-            // if (common.APP_PHASE.equals("1") || common.APP_PHASE.equals("3")|| common.APP_PHASE.equals("4")) {
+            // if (COMACT.APP_PHASE.equals("1") || COMACT.APP_PHASE.equals("3")|| COMACT.APP_PHASE.equals("4")) {
             if (KawaMap.isMergeEnable) {
-
                 apiCallForMergeSelectedPolygon();
             } else {
                 getCoordinatesOfSelectedPolygon(false);
@@ -368,23 +366,24 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
     }
 
     private void gotoEditPolygon(List<List<LatLng>> mergedCord) {
-        CameraPosition cameraPosition = mapboxMap.getCameraPosition();
-        common.MAPZOOM = cameraPosition.zoom;
+        CameraPosition cameraPosition = MAPBOXMAP.getCameraPosition();
+        COMACT.MAPZOOM = cameraPosition.zoom;
+        fragmentEditFarmBoundries fragmentEditFarmBoundries = new fragmentEditFarmBoundries();
         Bundle farms_bundle = new Bundle();
         farms_bundle.putString("id", STRID);
-        farms_bundle.putDouble("lat", common.CAMERALAT);
-        farms_bundle.putDouble("lng", common.CAMERALNG);
-        farms_bundle.putDouble("zoom", common.MAPZOOM);
+        farms_bundle.putDouble("lat", COMACT.CAMERALAT);
+        farms_bundle.putDouble("lng", COMACT.CAMERALNG);
+        farms_bundle.putDouble("zoom", COMACT.MAPZOOM);
 
         farms_bundle.putSerializable("data", (Serializable) mergedCord);
         farms_bundle.putSerializable("polygonarea", (Serializable) POLYGONAREA);
+        fragmentEditFarmBoundries.setArguments(farms_bundle);
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.kawaMapView, fragmentEditFarmBoundries.class,farms_bundle);
+        fragmentTransaction.replace(R.id.kawaMapView, fragmentEditFarmBoundries);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
     }
 
     private String getSelectedLatLng() {
@@ -409,8 +408,8 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
     private void startOver() {
 
-        common.segmentEvents(getActivity(), "Start Over",
-                "user clicked on Start over", mapboxMap, "", "START_OVER");
+        COMACT.segmentEvents(getActivity(), "Start Over",
+                "user clicked on Start over", MAPBOXMAP, "", "START_OVER");
         fragmentFarmLocation fragmentFarmLocation = new fragmentFarmLocation();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -436,17 +435,15 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
             listFeatures.add(multiPointFeature.toJson());
         }
 
-        String strMerge = "{\"farms_fetched_at\":" + "\"" + common.FARMS_FETCHED_AT + "\"" + ",\"recipe_id\":\"farm_boundaries\",\"aois\":" + String.valueOf(listFeatures) + "}";
+        String strMerge = "{\"farms_fetched_at\":" + "\"" + COMACT.FARMS_FETCHED_AT + "\"" + ",\"recipe_id\":\"farm_boundaries\",\"aois\":" + String.valueOf(listFeatures) + "}";
         JsonObject selectedFarms = JsonParser.parseString(strMerge).getAsJsonObject();
-        InterfaceKawaEvents interfaceKawaEvents = (InterfaceKawaEvents) getContext();
         interfaceKawaEvents.onkawaSelect(selectedFarms);
-
         //Phase second
-        common.showLoader(getActivity(), "isCircle");
-        ServiceManager.getInstance().getKawaService().getMergedPoints(KawaMap.KAWA_API_KEY, common.SDK_VERSION, selectedFarms).enqueue(new Callback<MergeModel>() {
+        COMACT.showLoader(getActivity(),"isCircle");
+        ServiceManager.getInstance().getKawaService().getMergedPoints(KawaMap.KAWA_API_KEY, COMACT.SDK_VERSION, selectedFarms).enqueue(new Callback<MergeModel>() {
             @Override
             public void onResponse(@NonNull Call<MergeModel> call, @NonNull Response<MergeModel> response) {
-                common.hideLoader();
+                COMACT.hideLoader();
                 try {
                     if (response.isSuccessful()) {
                         if (response.body() != null) {
@@ -465,34 +462,34 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
                                     }
                                     POLYGONAREA.add(responseKawa.get(i).getProperties().getArea());
                                 }
-                                common.segmentEvents(getActivity(), "Save Selection",
-                                        String.valueOf(selectedFarms), mapboxMap, String.valueOf(new Gson().toJson(response.body())), "SAVE_ON_SUCCESS");
+                                COMACT.segmentEvents(getActivity(), "Save Selection",
+                                        String.valueOf(selectedFarms), MAPBOXMAP, String.valueOf(new Gson().toJson(response.body())), "SAVE_ON_SUCCESS");
                                 gotoEditPolygon(lngLat);
 
                             }
                         }
                     } else {
-                        common.hideLoader();
+                        COMACT.hideLoader();
                         //assert response.errorBody() != null;
                         if (response.errorBody() != null) {
                             JSONObject jsonObj = new JSONObject(response.errorBody().string());
-                            common.segmentEvents(getActivity(), "Save Selection",
-                                    String.valueOf(selectedFarms), mapboxMap, jsonObj.getString("error"), "TYPESAVEFAIL");
-                            Toast.makeText(getContext(), jsonObj.getString("error"), Toast.LENGTH_LONG).show();
+                            COMACT.segmentEvents(getActivity(), "Save Selection",
+                                    String.valueOf(selectedFarms), MAPBOXMAP, jsonObj.getString("error"), "TYPESAVEFAIL");
+                            Toast.makeText(getApplicationContext(), jsonObj.getString("error"), Toast.LENGTH_LONG).show();
                         }
                     }
                 } catch (Exception e) {
-                    common.hideLoader();
+                    COMACT.hideLoader();
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<MergeModel> call, @NonNull Throwable t) {
-                common.hideLoader();
+                COMACT.hideLoader();
                 String errorBody = t.getMessage();
-//                Toast.makeText(getContext(), getResources().getString(R.string.Error_General), Toast.LENGTH_LONG).show();
-                Toast.makeText(getActivity(),  errorBody, Toast.LENGTH_LONG).show(); // this will tell you why your api doesnt work most of time
+                Toast.makeText(getApplicationContext(), errorBody, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(), "onResponse:Failure " + errorBody, Toast.LENGTH_LONG).show(); // this will tell you why your api doesnt work most of time
             }
         });
     }
@@ -534,7 +531,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
     private void resetBoundery() {
         changeBorderColor("#F7F14A");
-        //   messageBox.setBackgroundColor(KawaMap.headerBgColor);
+        messageBox.setBackgroundColor(KawaMap.headerBgColor);
         messageBox.setText(getResources().getString(R.string.start_selecting_label));
         hideShowSymbol("hide", false);
         hideShowPolygon(0.6f);
@@ -566,7 +563,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         LLARRAY = new ArrayList<>();
         FIRSTPOINTOFPOLY = new LatLng();
         messageBox.setText("Click on map and start drawing");
-        //messageBox.setBackgroundColor(KawaMap.headerBgColor);
+        messageBox.setBackgroundColor(KawaMap.headerBgColor);
     }
 
     private void saveBoundery() {
@@ -618,7 +615,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
             } else {
                 DRAWENABLE = 4;
             }
-            common.drawMapLayers(mapboxMap.getStyle(), LATLNGPTS, String.valueOf("DP" + PIDX), "TranStyle");
+            COMACT.drawMapLayers(MAPBOXMAP.getStyle(), LATLNGPTS, String.valueOf("DP" + PIDX), "TranStyle");
             PIDX += 1;
             redrawFarms();
             if (ISINTERSECT == 0 && DRAWENABLE == 4) {
@@ -653,12 +650,11 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
     }
 
     private void drawSymbol() {
-        Style style = mapboxMap.getStyle();
-         symbolManager = new SymbolManager(mapview, mapboxMap, style);
+        Style style = MAPBOXMAP.getStyle();
+        symbolManager = new SymbolManager(MAPVIEW, MAPBOXMAP, style);
         symbolManager.setIconAllowOverlap(true);
         symbolManager.setTextAllowOverlap(true);
         SYMBOLSET.add(symbolManager);
-
         style.addImage("symbol_blue", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_blue));
         style.addImage("symbol_yellow", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_yellow));
         style.addImage("symbol_active", BitmapFactory.decodeResource(this.getResources(), R.drawable.symbol_activeb));
@@ -670,12 +666,6 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         LASTINDEXOFSELECTEDPOLYGON = DRAWLNGLAT.get(0).size();
 
         objD.addProperty("sIndex", j);
-//        boolean draggable = true;
-//        String icon_name = "symbol_blue";
-//        if (j == 0)
-//            icon_name = "symbol_active";
-//        else
-//            draggable = true;
         symbolManager.create(new SymbolOptions()
                 .withLatLng(new LatLng(DRAWLNGLAT.get(0).get(j).getLatitude(), DRAWLNGLAT.get(0).get(j).getLongitude()))
                 .withIconImage("symbol_blue")
@@ -684,47 +674,12 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
                 .withIconOpacity(0.8f)
                 .withData(objD)
         );
-//        symbolManager.addClickListener(symbol -> {
-//            JsonObject objS = (JsonObject) symbol.getData();
-//            int symbolIndex = objS.get("sIndex").getAsInt();
-//            if ( symbolIndex == 0) {
-//            }
-//
-//            /*if (EDITON) {
-//                if (symbol.getIconOpacity() > 0) {
-//                    int flg = 0;
-//                    if (SYMBOLACTIVE != null) {
-//
-//                        if (!symbol.equals(SYMBOLACTIVE)) {
-//                            SYMBOLACTIVE.setDraggable(true);
-//                            SYMBOLACTIVE.setIconImage("symbol_blue");
-//                            SYMBOLACTIVE.setIconSize(0.3F);
-//                            symbolManager.update(SYMBOLACTIVE);
-//                            flg = 1;
-//                        }
-//                    } else {
-//                        flg = 1;
-//                    }
-//
-//                    if (flg == 1) {
-//                        SYMBOLACTIVE = symbol;
-//                        symbol.setDraggable(true);
-//                        symbol.setIconImage("symbol_yellow");
-//                        symbol.setIconSize(0.5f);
-//                        symbolManager.update(symbol);
-//                        // onSymbolSelected();
-//
-//                    }
-//                }
-//            }*/
-//            return true;
-//        });
 
-       symbolManager.addDragListener(new OnSymbolDragListener() {
+
+        symbolManager.addDragListener(new OnSymbolDragListener() {
             @Override
             public void onAnnotationDragStarted(Symbol symbol) {
                 JsonObject objD = (JsonObject) symbol.getData();
-                Log.e("TAG", "onAnnotationDragStarted: " );
                 int sIndex = objD.get("sIndex").getAsInt();
                 if (sIndex == 0 && DRAWLNGLAT.get(0).size() > 2) {
                     onMapClick(symbol.getLatLng());
@@ -733,7 +688,6 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
             @Override
             public void onAnnotationDrag(Symbol symbol) {
-                Log.e("TAG", "onAnnotationDragStarted: " );
                 JsonObject objD = (JsonObject) symbol.getData();
                 int sIndex = objD.get("sIndex").getAsInt();
                 if (sIndex == 0) {
@@ -771,14 +725,14 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
     }
 
-    private void onMaboxMapClick(LatLng coordsOfPoint) {
-         mapboxMap.getStyle(style -> {
+    /* private void onMaboxMapClick(LatLng coordsOfPoint) {
+         MAPBOXMAP.getStyle(style -> {
              boolean contains = false;
              Integer foundIdx = -1;
 
              if (coordsOfPoint != null) {
                  for (int i = 0; i < DRAWLNGLAT.size(); i++) {
-                     contains = common.checkLatLongInPolygon(coordsOfPoint, DRAWLNGLAT.get(i));
+                     contains = COMACT.checkLatLongInPolygon(coordsOfPoint, DRAWLNGLAT.get(i));
                      if (contains) {
                          foundIdx = i;
                          break;
@@ -811,7 +765,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
          });
      }
-
+ */
     private void hideShowSymbol(String type, boolean discard) {
         if (SYMBOLSET.size() > 0) {
             for (int i = 0; i < SYMBOLSET.size(); i++) {
@@ -853,7 +807,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
     }
 
     private void hideShowPolygon(float opacityP) {
-        Style style = mapboxMap.getStyle();
+        Style style = MAPBOXMAP.getStyle();
         for (int i = 0; i < LNGLAT.size(); i++) {
             Layer lineLayer = style.getLayer("lineLayerID" + i);
             Layer polyLayer = style.getLayer("polyLayerID" + i);
@@ -883,7 +837,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
     private void redrawFarms() {
         if (DRAWLNGLAT.get(0) != null) {
-            mapboxMap.getStyle(style -> {
+            MAPBOXMAP.getStyle(style -> {
                 List<Point> llPts = new ArrayList<>();
                 List<List<Point>> llPtsA = new ArrayList<>();
                 for (int j = 0; j < DRAWLNGLAT.get(0).size(); j++) {
@@ -919,7 +873,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
         ISINTERSECT = 0;
         changeBorderColor("#F7F14A");
         //messageBox.setText(getResources().getString(R.string.complete_marking_save_polygon));
-        //   messageBox.setBackgroundColor(KawaMap.headerBgColor);
+        messageBox.setBackgroundColor(KawaMap.headerBgColor);
         if (DRAWLNGLAT.get(0).size() > 2) {
             for (int j = 0; j < intersectionCheckLimit; j++) {
                 lnPoint1 = Point.fromLngLat(DRAWLNGLAT.get(0).get(j).getLongitude(), DRAWLNGLAT.get(0).get(j).getLatitude());
@@ -975,7 +929,7 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
 
 
     private void changeBorderColor(String borderColorCode) {
-        Style style = mapboxMap.getStyle();
+        Style style = MAPBOXMAP.getStyle();
         for (int k = 0; k < PIDX; k++) {
             Layer lineLayer = style.getLayer("lineLayerIDDP" + k);
             Layer polyLayer = style.getLayer("polyLayerIDDP" + k);
@@ -989,44 +943,42 @@ public class fragmentShowAllFarms extends Fragment implements OnMapReadyCallback
     @Override
     public void onStart() {
         super.onStart();
-        mapview.onStart();
+        MAPVIEW.onStart();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapview.onResume();
+        MAPVIEW.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapview.onPause();
+        MAPVIEW.onPause();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mapview.onStop();
+        MAPVIEW.onStop();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapview.onSaveInstanceState(outState);
+        MAPVIEW.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapview.onDestroy();
-        mapview = null;
-
+        MAPVIEW.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapview.onLowMemory();
+        MAPVIEW.onLowMemory();
     }
 }

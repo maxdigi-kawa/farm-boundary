@@ -121,6 +121,19 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/trashBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_above="@+id/GET_FARMSBtn"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/style_circle"
+            android:src="@drawable/ic_delete"
+            android:visibility="gone"
+            app:backgroundTint="@color/mapboxBlack"
+            app:tint="@android:color/white" />
+
+        <ImageButton
             android:id="@+id/zoomInBtn"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -137,11 +150,12 @@
             android:layout_marginLeft="16dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/style_rounded_corner_bottom"
-
             android:src="@drawable/ic_minus"
             android:textColor="@color/mapboxWhite"
             android:visibility="gone"
             app:backgroundTint="@color/mapboxBlack" />
+
+
 
 
         <Button

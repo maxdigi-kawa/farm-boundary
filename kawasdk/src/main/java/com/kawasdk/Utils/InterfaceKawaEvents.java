@@ -6,8 +6,8 @@ import org.json.JSONObject;
 
 public interface InterfaceKawaEvents {
     public void initKawaMap(boolean isValid);
-    public void onkawaSelect(String data);
-    public void onkawaUpdate(String centerposition);
+    public void onkawaSelect(JsonObject data);
+    public void onkawaUpdate(JSONObject centerposition);
     public void onkawaSubmit(String data);
     public void onkawaDestroy();
 

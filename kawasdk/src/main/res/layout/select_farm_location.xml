@@ -160,14 +160,14 @@
             android:visibility="gone"
             android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progress_circular"
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:minHeight="50dp"
-            android:layout_gravity="center"
-            android:minWidth="50dp"/>
+            <ProgressBar
+                android:id="@+id/progress_circular"
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:minHeight="50dp"
+                android:layout_gravity="center"
+                android:minWidth="50dp"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -212,17 +212,29 @@
             app:backgroundTint="@color/mapboxPink"
             app:tint="@android:color/white" />
 
-<!--        <Button-->
-<!--            android:id="@+id/GET_FARMSBtn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_marginTop="-5dp"-->
-<!--            android:layout_marginBottom="-7dp"-->
-<!--            android:foreground="@drawable/riipleeffectbuttons"-->
-<!--            android:text="@string/GET_FARMSStr"-->
-<!--            android:textAlignment="center"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:textColor="@color/whitePressed" />-->
+        <!--        <Button-->
+        <!--            android:id="@+id/GET_FARMSBtn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="60dp"-->
+        <!--            android:layout_marginTop="-5dp"-->
+        <!--            android:layout_marginBottom="-7dp"-->
+        <!--            android:foreground="@drawable/riipleeffectbuttons"-->
+        <!--            android:text="@string/GET_FARMSStr"-->
+        <!--            android:textAlignment="center"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textColor="@color/whitePressed" />-->
+
+        <TextView
+            android:id="@+id/versionName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_gravity="end"
+            android:visibility="gone"
+            android:layout_marginRight="16dp"
+            android:text="SDK V. -1.6.3"
+            android:textSize="20dp"
+            android:textColor="#fff" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/GET_FARMSBtn"
